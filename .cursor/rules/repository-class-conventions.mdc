@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- 必须使用@Repository注解标注Repository类。
+- Repository类必须是接口类型。
+- 必须继承JpaRepository，并指定实体类和实体ID作为参数，除非在提示中另有说明。
+- 所有@Query类型方法必须使用JPQL，除非在提示中另有说明。
+- 关系查询中必须使用@EntityGraph(attributePaths={"relatedEntity"})以避免N+1问题。
+- 多表连接查询时，必须使用DTO作为数据容器并配合@Query使用。

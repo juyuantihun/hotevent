@@ -1,0 +1,339 @@
+/* 时间线主页面响应式样式 */
+
+.timeline-container {
+  padding: 20px;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left h2 {
+  margin: 0 0 4px 0;
+  color: #303133;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header-left .subtitle {
+  color: #909399;
+  font-size: 14px;
+}
+
+.header-right {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-filter-container {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form .el-form-item {
+  margin-bottom: 16px;
+}
+
+.search-form .text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.search-form .search-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.timeline-content .empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.timeline-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.timeline-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #303133;
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+  margin-right: 12px;
+  /* 添加文本截断 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-header .card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.timeline-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #409eff;
+}
+
+.timeline-preview .timeline-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e4e7ed;
+  z-index: 0;
+}
+
+.timeline-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.node-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #409eff;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.node-label {
+  font-size: 10px;
+  color: #606266;
+  white-space: nowrap;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.more-nodes {
+  color: #909399;
+  font-size: 12px;
+  background: #f0f2f5;
+  padding: 4px 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f2f5;
+  font-size: 12px;
+  color: #909399;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式布局调整 */
+@media (max-width: 992px) {
+  .timeline-container {
+    padding: 15px;
+  }
+  
+  .timeline-header {
+    padding: 15px;
+  }
+  
+  .timeline-cards {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-container {
+    padding: 10px;
+  }
+  
+  .timeline-header {
+    padding: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .search-filter-container {
+    padding: 15px;
+  }
+  
+  .search-form .el-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .search-form .el-col {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .search-form .search-buttons {
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .timeline-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-item:last-child {
+    grid-column: span 2;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 576px) {
+  .timeline-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-right .el-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .timeline-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-item {
+    padding: 8px 0;
+  }
+  
+  .stat-item:last-child {
+    grid-column: auto;
+  }
+  
+  .search-form .el-form-item__label {
+    float: none;
+    display: block;
+    text-align: left;
+    padding: 0 0 8px;
+  }
+  
+  .search-form .el-form-item__content {
+    margin-left: 0 !important;
+  }
+  
+  .search-form .el-input-number,
+  .search-form .el-select,
+  .search-form .el-input {
+    width: 100% !important;
+  }
+  
+  .pagination-container :deep(.el-pagination) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

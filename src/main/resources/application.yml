@@ -1,0 +1,260 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hot-events
+  
+  datasource:
+    url: jdbc:mysql://localhost:3307/hot_events_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&foreign_key_checks=0
+    username: root
+    password: xj2022
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+  
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      adjust-dates-to-context-time-zone: false
+
+  # Neo4j配置（禁用）
+  neo4j:
+    enabled: false  # 设置为false，禁用Neo4j
+
+# 应用配置
+app:
+  # JWT配置
+  jwt:
+    secret: hotech-events-secret-key-2024
+    expiration: 604800000  # 7天过期
+  
+  # DeepSeek配置
+  deepseek:
+    # 官方API配置（不支持联网搜索）
+    official:
+      api-url: https://api.deepseek.com/v1/chat/completions
+      api-key: ${DEEPSEEK_API_KEY:sk-f8d7a6ecc6b248c98a7d6e1d4a3b80a4}
+      model: deepseek-chat
+    
+    # 火山引擎API配置（支持联网搜索）
+    volcengine:
+      api-url: https://ark.cn-beijing.volces.com/api/v3/bots/chat/completions
+      api-key: ${ARK_API_KEY:314de2f8-ecd5-4311-825b-65e0233e350e}
+      model: bot-20250725163638-5gn4n
+    
+    # 默认配置（向后兼容）
+    api-url: https://api.deepseek.com/v1/chat/completions
+    api-key: ${DEEPSEEK_API_KEY:sk-f8d7a6ecc6b248c98a7d6e1d4a3b80a4}
+    model: deepseek-chat
+    max-tokens: 2000
+    temperature: 0.7
+    timeout: 60000
+    
+    # 联网搜索配置
+    web-search:
+      enabled: true
+      max-results: 10
+      search-timeout: 30000
+    
+    # 增强功能配置
+    enhanced:
+      # 缓存配置
+      cache-ttl: 300000  # 缓存TTL，5分钟
+      enable-cache: true
+      
+      # 限流配置
+      rate-limit: 60  # 每分钟60次请求
+      enable-rate-limit: true
+      
+      # 批处理配置
+      batch-size: 10
+      async-thread-pool-size: 10
+      
+      # 重试配置
+      max-retries: 3
+      retry-interval: 1000
+      
+      # 监控配置
+      enable-monitoring: true
+      health-check-interval: 60000  # 1分钟
+      stats-retention-days: 30
+  
+  # 任务配置
+  task:
+    fetch:
+      enabled: true
+      interval: 3600000  # 1小时执行一次 (毫秒)
+      batch-size: 5      # 每次抓取的事件数量
+
+  # Event项目服务配置
+  event-service:
+    base-url: http://localhost:8082  # event项目的基础URL
+  
+  # 容错配置
+  fault-tolerance:
+    # 熔断器配置
+    circuit-breaker:
+      failure-threshold: 5        # 失败阈值
+      timeout: 60000             # 熔断器超时时间(毫秒)
+      half-open-max-calls: 3     # 半开状态最大调用次数
+    
+    # 重试配置
+    retry:
+      max-attempts: 3            # 最大重试次数
+      initial-interval: 1000     # 初始重试间隔(毫秒)
+      multiplier: 2.0           # 重试间隔倍数
+      max-interval: 10000       # 最大重试间隔(毫秒)
+  
+  # 监控配置
+  monitoring:
+    # 系统阈值配置
+    cpu-threshold: 80.0          # CPU使用率阈值(%)
+    memory-threshold: 85.0       # 内存使用率阈值(%)
+    disk-threshold: 90.0         # 磁盘使用率阈值(%)
+    error-rate-threshold: 10.0   # 错误率阈值(%)
+    response-time-threshold: 5000 # 响应时间阈值(毫秒)
+    
+    # 告警配置
+    alert:
+      enable-email: false        # 启用邮件告警
+      enable-sms: false         # 启用短信告警
+      enable-webhook: false     # 启用Webhook告警
+      
+    # 数据保留配置
+    retention:
+      error-logs-days: 30       # 错误日志保留天数
+      performance-logs-days: 7  # 性能日志保留天数
+      alerts-days: 90          # 告警记录保留天数
+      password: 1qaz2wsx
+    database: timeflow
+    pool:
+      metrics-enabled: true
+      max-connection-pool-size: 50
+      connection-acquisition-timeout: 30000ms
+      connection-timeout: 30000ms
+      idle-time-before-connection-test: 60000ms
+      max-connection-lifetime: 3600000ms
+      log-leaked-sessions: true
+    connect-timeout: 30000ms
+    socket-connection-timeout: 30000ms
+    driver:
+      config:
+        encrypted: false
+        trust-strategy: TRUST_ALL_CERTIFICATES
+        logging:
+          level: INFO
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.hotech.events.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      table-prefix: ""
+
+logging:
+  level:
+    com.hotech.events: debug
+    org.springframework.security: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+
+
+# 提示词模板配置
+prompt:
+  template:
+    # 配置文件路径
+    config:
+      path: config/prompt-templates.yml
+    
+    # 文件监听配置
+    watch:
+      enabled: true
+      
+    # 缓存配置
+    cache:
+      enabled: true
+      refresh-interval: 300  # 缓存刷新间隔（秒）
+      
+    # 验证配置
+    validation:
+      max-content-length: 10000
+      enable-strict-mode: false
+
+# 系统配置管理
+system:
+  config:
+    # 缓存配置
+    cache:
+      enabled: true
+      ttl: 300000  # 缓存TTL（毫秒）
+    
+    # 热更新配置
+    hot-reload:
+      enabled: true
+      check-interval: 5000  # 检查间隔（毫秒）
+    
+    # 验证配置
+    validation:
+      strict-mode: false
+      max-key-length: 100
+      max-value-length: 10000
+    
+    # 加密配置
+    encryption:
+      enabled: true
+      algorithm: AES
+      key: ${CONFIG_ENCRYPTION_KEY:hotech-config-key-2024}
+
+# Knife4j配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn 
+
+# 时间线增强功能配置
+timeline:
+  enhancement:
+    # 引用外部配置文件
+    config-file: classpath:config/timeline-enhancement-config.yml
+    # 是否启用时间线增强功能
+    enabled: true
+    # 配置热更新
+    hot-reload:
+      enabled: true
+      check-interval: 10000  # 检查间隔（毫秒）

@@ -1,0 +1,241 @@
+/* 时间线详情视图响应式样式 */
+
+/* 基础样式增强 */
+.timeline-detail-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #303133;
+  word-break: break-word;
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #606266;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 时间线视图样式增强 */
+.timeline-view {
+  display: flex;
+  gap: 20px;
+  height: 600px;
+  flex-direction: row;
+}
+
+.timeline-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 0; /* 防止溢出 */
+}
+
+.timeline-header-controls {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e4e7ed;
+  background-color: #f5f7fa;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 20px;
+  position: relative;
+  -webkit-overflow-scrolling: touch; /* 提升移动端滚动体验 */
+}
+
+/* 事件节点样式增强 */
+.popup-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-location {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 列表视图样式增强 */
+.filter-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 响应式布局调整 */
+@media (max-width: 992px) {
+  .timeline-detail-view {
+    padding: 15px;
+  }
+  
+  .detail-header {
+    padding: 12px;
+  }
+  
+  .header-info h2 {
+    font-size: 20px;
+  }
+  
+  .timeline-view {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .event-sidebar {
+    width: 100% !important;
+    margin-top: 20px;
+    max-height: 400px;
+  }
+  
+  .sidebar-content {
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-detail-view {
+    padding: 10px;
+  }
+  
+  .detail-header {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .header-info h2 {
+    font-size: 18px;
+  }
+  
+  .timeline-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .detail-content {
+    padding: 15px;
+  }
+  
+  .timeline-container {
+    min-height: 400px;
+  }
+  
+  .graph-view {
+    height: 400px;
+  }
+  
+  /* 调整表格在移动设备上的显示 */
+  .table-view .el-table {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  /* 调整过滤器在移动设备上的显示 */
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-container .el-input,
+  .filter-container .el-select {
+    width: 100% !important;
+  }
+}
+
+/* 小屏幕设备的额外调整 */
+@media (max-width: 576px) {
+  .header-actions .el-button-group {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .header-actions .el-button-group .el-button {
+    flex: 1;
+  }
+  
+  .timeline-header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .timeline-header-controls .el-slider {
+    width: 100% !important;
+  }
+  
+  .zoom-label {
+    margin-left: 0;
+    text-align: center;
+  }
+  
+  .graph-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .graph-controls .el-button-group {
+    display: flex;
+  }
+  
+  .graph-controls .el-button-group .el-button {
+    flex: 1;
+  }
+  
+  .graph-controls .el-select {
+    width: 100% !important;
+  }
+}

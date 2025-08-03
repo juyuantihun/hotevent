@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API调试测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>API调试测试页面</h1>
+    
+    <div class="test-section">
+        <h2>1. 测试火山引擎API健康状态</h2>
+        <button onclick="testApiHealth()">检查API健康状态</button>
+        <div id="health-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 测试简单事件检索</h2>
+        <button onclick="testSimpleEventFetch()">测试事件检索</button>
+        <div id="fetch-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 测试时间线生成（调试模式）</h2>
+        <button onclick="testTimelineGeneration()">生成测试时间线</button>
+        <div id="timeline-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 查看最近的API调用日志</h2>
+        <button onclick="getApiLogs()">获取API日志</button>
+        <div id="logs-result" class="result"></div>
+    </div>
+
+    <script>
+        async function testApiHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.textContent = '正在检查API健康状态...';
+            resultDiv.className = 'result loading';
+            
+            try {
+                const response = await fetch('/api/deepseek/health');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.isHealthy ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = '错误: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testSimpleEventFetch() {
+            const resultDiv = document.getElementById('fetch-result');
+            resultDiv.textContent = '正在测试事件检索...';
+            resultDiv.className = 'result loading';
+            
+            try {
+                const testRequest = {
+                    name: "测试时间线",
+                    description: "2025年6月中东地区重要事件",
+                    regionIds: [1],
+                    startTime: "2025-06-01T00:00:00",
+                    endTime: "2025-06-30T23:59:59"
+                };
+                
+                const response = await fetch('/api/deepseek/test-fetch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testRequest)
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = '错误: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testTimelineGeneration() {
+            const resultDiv = document.getElementById('timeline-result');
+            resultDiv.textContent = '正在生成测试时间线...';
+            resultDiv.className = 'result loading';
+            
+            try {
+                const testRequest = {
+                    name: "调试测试时间线",
+                    description: "用于调试的测试时间线",
+                    regionIds: [1],
+                    startTime: "2025-06-01T00:00:00",
+                    endTime: "2025-06-30T23:59:59"
+                };
+                
+                const response = await fetch('/api/timelines/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testRequest)
+                });
+                
+                const data = await response.json();
+                
+                if (data.id) {
+                    resultDiv.textContent = `时间线创建成功，ID: ${data.id}\n正在监控生成进度...`;
+                    monitorTimelineProgress(data.id, resultDiv);
+                } else {
+                    resultDiv.textContent = JSON.stringify(data, null, 2);
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = '错误: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function monitorTimelineProgress(timelineId, resultDiv) {
+            let attempts = 0;
+            const maxAttempts = 30; // 最多监控5分钟
+            
+            const checkProgress = async () => {
+                try {
+                    const response = await fetch(`/api/timelines/${timelineId}/generation-progress`);
+                    const progress = await response.json();
+                    
+                    resultDiv.textContent = `时间线ID: ${timelineId}\n` + JSON.stringify(progress, null, 2);
+                    
+                    if (progress.status === 'COMPLETED') {
+                        resultDiv.className = 'result success';
+                        return;
+                    } else if (progress.status === 'FAILED') {
+                        resultDiv.className = 'result error';
+                        return;
+                    }
+                    
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        setTimeout(checkProgress, 10000); // 每10秒检查一次
+                    } else {
+                        resultDiv.textContent += '\n\n监控超时，请手动检查时间线状态';
+                        resultDiv.className = 'result';
+                    }
+                } catch (error) {
+                    resultDiv.textContent += '\n\n监控错误: ' + error.message;
+                    resultDiv.className = 'result error';
+                }
+            };
+            
+            setTimeout(checkProgress, 2000); // 2秒后开始检查
+        }
+        
+        async function getApiLogs() {
+            const resultDiv = document.getElementById('logs-result');
+            resultDiv.textContent = '正在获取API日志...';
+            resultDiv.className = 'result loading';
+            
+            try {
+                const response = await fetch('/api/deepseek/logs');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = '错误: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>

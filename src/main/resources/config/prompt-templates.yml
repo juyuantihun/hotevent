@@ -1,0 +1,226 @@
+# 提示词模板配置文件
+# 用于配置DeepSeek API的各种提示词模板
+
+templates:
+  # 事件检索模板
+  event_fetch:
+    name: "默认事件检索模板"
+    version: "1.0"
+    content: |
+      你是一个专业的国际事件分析师。请根据以下条件，从可靠的新闻源中检索真实的国际事件：
+      
+      时间线名称：{timelineName}
+      时间线描述：{timelineDescription}
+      目标地区：{regions}
+      时间范围：{startTime} 至 {endTime}
+      
+      请严格按照以下要求：
+      1. 只返回真实发生的事件
+      2. 事件必须与指定地区和时间范围相关
+      3. 优先选择具有重大影响的事件
+      4. 确保事件信息的准确性和完整性
+      5. 每个事件都要包含可靠的来源信息
+      6. 按照时间顺序排列事件
+      
+      返回格式：{responseFormat}
+
+  # 联网搜索增强事件检索模板
+  event_fetch_web_enhanced:
+    name: "联网搜索增强事件检索模板"
+    version: "2.0"
+    content: |
+      你是一个专业的国际事件分析师，具备实时联网搜索能力。请根据以下条件，深入搜索并检索真实的国际事件：
+      
+      时间线名称：{timelineName}
+      时间线描述：{timelineDescription}
+      目标地区：{regions}
+      时间范围：{startTime} 至 {endTime}
+      
+      **重要要求 - 请生成至少25-30个高质量事件：**
+      
+      1. **深度搜索**：利用联网搜索能力，从多个可靠新闻源获取信息
+      2. **事件多样性**：涵盖政治、经济、社会、科技、文化、体育、环境、军事等多个领域
+      3. **时间分布**：确保事件在整个时间范围内均匀分布
+      4. **地区覆盖**：如果涉及多个地区，确保每个地区都有相关事件
+      5. **重要性层次**：包含重大国际事件、区域性事件和具有影响力的社会事件
+      6. **详细描述**：每个事件的描述要详细、准确，包含背景、过程、影响
+      7. **可靠来源**：每个事件必须标注具体的新闻来源
+      8. **实时性**：优先包含最新、最相关的事件信息
+      9. **地理信息要求**：每个事件必须包含准确的地理位置信息，包括主体、客体的地理坐标
+      
+      **搜索策略**：
+      - 搜索主要国际新闻网站（BBC、CNN、Reuters、AP、新华社等）
+      - 关注官方政府发布、国际组织声明
+      - 包含经济数据发布、市场动态
+      - 涵盖科技突破、文化事件
+      - 关注社会热点、民生事件
+      
+      **事件质量标准**：
+      - 每个事件都要有明确的时间、地点、人物、事件经过
+      - 描述要客观、准确、详细（至少100-200字）
+      - 包含事件的背景、影响和后续发展
+      - 标注可信度评分（0.8-1.0之间）
+      - **必须包含地理信息**：事件发生地的经纬度坐标、主体和客体的地理位置
+      
+      **地理信息要求**：
+      - 事件发生地必须提供准确的经纬度坐标
+      - 主体（subject）：事件的执行者或发起者，如果是地理实体需提供坐标
+      - 客体（object）：事件的接受者或目标，如果是地理实体需提供坐标
+      - 坐标格式：纬度在-90到90之间，经度在-180到180之间
+      - 如果无法确定准确坐标，使用该地区的中心坐标或首府坐标
+      
+      返回格式：{responseFormat}
+    
+    response_format: |
+      {
+        "events": [
+          {
+            "title": "事件标题",
+            "description": "详细描述",
+            "eventTime": "2024-01-01T12:00:00",
+            "location": "具体地点",
+            "latitude": 39.9042,
+            "longitude": 116.4074,
+            "subject": "事件主体",
+            "object": "事件客体",
+            "subjectCoordinate": {
+              "latitude": 39.9042,
+              "longitude": 116.4074,
+              "locationName": "主体地点名称",
+              "locationType": "COUNTRY"
+            },
+            "objectCoordinate": {
+              "latitude": 31.2304,
+              "longitude": 121.4737,
+              "locationName": "客体地点名称",
+              "locationType": "CITY"
+            },
+            "eventType": "事件类型",
+            "keywords": ["关键词1", "关键词2"],
+            "sources": ["来源1", "来源2"],
+            "credibilityScore": 0.95
+          }
+        ]
+      }
+
+  # 事件验证模板
+  event_validation:
+    name: "默认事件验证模板"
+    version: "1.0"
+    content: |
+      请验证以下事件的真实性和准确性：
+      
+      {eventsList}
+      
+      验证标准：
+      1. 事件是否真实发生
+      2. 时间、地点信息是否准确
+      3. 事件描述是否客观
+      4. 是否有可靠来源支持
+      5. 事件逻辑是否合理
+      6. 是否存在明显的偏见或错误信息
+      
+      对于每个事件，请提供：
+      - 真实性评估（true/false）
+      - 可信度评分（0-1之间）
+      - 发现的问题列表
+      - 改进建议
+      
+      返回格式：{responseFormat}
+    
+    response_format: |
+      {
+        "validationResults": [
+          {
+            "eventId": "事件ID",
+            "isValid": true,
+            "credibilityScore": 0.95,
+            "issues": ["问题1", "问题2"],
+            "suggestions": ["建议1", "建议2"]
+          }
+        ]
+      }
+
+  # 时间线编制模板
+  timeline_organize:
+    name: "默认时间线编制模板"
+    version: "1.0"
+    content: |
+      请将以下已验证的事件组织成连贯的时间线：
+      
+      时间线主题：{timelineName}
+      
+      事件列表：
+      {eventsList}
+      
+      已知事件关系：
+      {relationsList}
+      
+      组织原则：
+      1. 按时间顺序排列事件
+      2. 识别和建立因果关系
+      3. 突出关键转折点和里程碑事件
+      4. 保持逻辑连贯性
+      5. 标注事件的重要程度
+      6. 识别并行发生的事件
+      
+      请分析事件间的关系，包括：
+      - 因果关系（cause）
+      - 时间先后关系（sequence）
+      - 并行关系（parallel）
+      - 影响关系（influence）
+      
+      返回格式：{responseFormat}
+    
+    response_format: |
+      {
+        "timeline": {
+          "events": [
+            {
+              "eventId": 1,
+              "order": 1,
+              "importance": "high",
+              "category": "政治",
+              "summary": "事件简要描述"
+            }
+          ],
+          "relations": [
+            {
+              "sourceEventId": 1,
+              "targetEventId": 2,
+              "relationType": "cause",
+              "strength": 0.8,
+              "description": "关系描述"
+            }
+          ],
+          "milestones": [
+            {
+              "eventId": 1,
+              "significance": "重大转折点",
+              "impact": "对后续事件的影响"
+            }
+          ]
+        }
+      }
+
+# 配置参数
+config:
+  # 是否启用模板缓存
+  enable_cache: true
+  
+  # 缓存刷新间隔（秒）
+  cache_refresh_interval: 300
+  
+  # 默认模板版本
+  default_version: "1.0"
+  
+  # 模板验证规则
+  validation:
+    # 模板内容最大长度
+    max_content_length: 10000
+    
+    # 必需的参数占位符
+    required_placeholders:
+      event_fetch: ["timelineName", "timelineDescription", "regions", "startTime", "endTime", "responseFormat"]
+      event_validation: ["eventsList", "responseFormat"]
+      timeline_organize: ["timelineName", "eventsList", "relationsList", "responseFormat"]

@@ -1,0 +1,15 @@
+{
+  "model": "deepseek-r1-250120",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个专业的事件分析助手。"
+    },
+    {
+      "role": "user",
+      "content": "请简单介绍一下你的功能，用中文回答。"
+    }
+  ],
+  "max_tokens": 100,
+  "temperature": 0.7
+}

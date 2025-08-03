@@ -1,0 +1,106 @@
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "18"
+
+# 缓存依赖
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+# 代码检查
+lint:
+  stage: lint
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npm run lint
+    - npm run type-check
+
+# 单元测试
+unit-test:
+  stage: test
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npm run test:coverage
+  artifacts:
+    paths:
+      - coverage/
+      - test-results/unit/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    expire_in: 1 week
+
+# 端到端测试
+e2e-test:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.42.1-focal
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run test:e2e
+  artifacts:
+    paths:
+      - playwright-report/
+      - test-results/
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"
+      when: always
+    - when: manual
+
+# 构建
+build:
+  stage: build
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+# 部署到测试环境
+deploy-test:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache rsync openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - rsync -rav --delete dist/ $TEST_SERVER_USER@$TEST_SERVER_HOST:$TEST_SERVER_PATH
+  environment:
+    name: test
+    url: https://test.example.com
+  only:
+    - develop
+  when: manual
+
+# 部署到生产环境
+deploy-prod:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache rsync openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - rsync -rav --delete dist/ $PROD_SERVER_USER@$PROD_SERVER_HOST:$PROD_SERVER_PATH
+  environment:
+    name: production
+    url: https://example.com
+  only:
+    - main
+  when: manual

@@ -1,0 +1,36 @@
+# 动态系统配置
+app:
+  system:
+    dynamic:
+      # API选择策略配置
+      api-selection:
+        primary-api-type: DEEPSEEK_OFFICIAL
+        fallback-api-type: VOLCENGINE_WEB
+        failure-threshold: 0.3
+        health-check-interval: 60
+        enable-auto-switch: true
+        switch-cooldown: 300
+      
+      # 重复检测配置
+      duplication-detection:
+        name-similarity-threshold: 0.8
+        time-window-minutes: 5
+        fingerprint-ttl-minutes: 30
+        strict-mode: false
+        max-detection-records: 1000
+      
+      # 事件数量配置
+      event-count:
+        minimum-event-count: 10
+        target-event-count: 20
+        maximum-event-count: 50
+        fallback-data-ratio: 0.3
+        enable-smart-supplement: true
+      
+      # 健康检查配置
+      health-check:
+        check-interval: 30
+        timeout: 10
+        retry-count: 3
+        enable-detailed-check: true
+        alert-threshold: 0.8

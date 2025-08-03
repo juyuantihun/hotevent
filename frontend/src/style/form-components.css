@@ -1,0 +1,429 @@
+/* 表单和交互组件样式 */
+
+/* 表单容器 */
+.form-container {
+  max-width: 100%;
+  margin-bottom: 24px;
+}
+
+/* 表单项样式 */
+.form-item {
+  margin-bottom: 20px;
+}
+
+.form-item-label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-primary, #303133);
+}
+
+.form-item-content {
+  position: relative;
+}
+
+.form-item-error {
+  color: var(--danger-color, #f56c6c);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.form-item-help {
+  color: var(--text-secondary, #909399);
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* 表单操作区域 */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-lighter, #ebeef5);
+}
+
+/* 输入框样式增强 */
+.enhanced-input {
+  position: relative;
+  width: 100%;
+}
+
+.input-prefix-icon,
+.input-suffix-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary, #909399);
+  z-index: 1;
+}
+
+.input-prefix-icon {
+  left: 12px;
+}
+
+.input-suffix-icon {
+  right: 12px;
+}
+
+.input-with-prefix .el-input__inner {
+  padding-left: 36px;
+}
+
+.input-with-suffix .el-input__inner {
+  padding-right: 36px;
+}
+
+.input-character-count {
+  position: absolute;
+  right: 10px;
+  bottom: -18px;
+  font-size: 12px;
+  color: var(--text-secondary, #909399);
+}
+
+.input-character-count.is-limit {
+  color: var(--warning-color, #e6a23c);
+}
+
+/* 按钮样式增强 */
+.enhanced-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-icon {
+  margin-right: 4px;
+}
+
+.button-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-loading-icon {
+  margin-right: 4px;
+}
+
+/* 选择器样式增强 */
+.enhanced-select {
+  width: 100%;
+}
+
+.select-option-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-option-icon {
+  font-size: 16px;
+}
+
+.select-option-label {
+  flex: 1;
+}
+
+.select-option-description {
+  font-size: 12px;
+  color: var(--text-secondary, #909399);
+  margin-top: 2px;
+}
+
+.select-group-header {
+  font-weight: 600;
+  padding: 8px 12px;
+  color: var(--text-primary, #303133);
+  background-color: var(--background-light, #f5f7fa);
+}
+
+/* 复选框和单选框样式增强 */
+.checkbox-group,
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.checkbox-button,
+.radio-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-base, #dcdfe6);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.checkbox-button:hover,
+.radio-button:hover {
+  border-color: var(--primary-color, #409eff);
+}
+
+.checkbox-button.is-checked,
+.radio-button.is-checked {
+  border-color: var(--primary-color, #409eff);
+  background-color: var(--primary-light, #ecf5ff);
+}
+
+.checkbox-button-icon,
+.radio-button-icon {
+  font-size: 18px;
+}
+
+.checkbox-button-content,
+.radio-button-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-button-label,
+.radio-button-label {
+  font-weight: 500;
+  color: var(--text-primary, #303133);
+}
+
+.checkbox-button-description,
+.radio-button-description {
+  font-size: 12px;
+  color: var(--text-secondary, #909399);
+  margin-top: 2px;
+}
+
+/* 开关样式增强 */
+.enhanced-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-label {
+  font-size: 14px;
+  color: var(--text-regular, #606266);
+}
+
+/* 滑块样式增强 */
+.enhanced-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-label {
+  font-size: 14px;
+  color: var(--text-regular, #606266);
+}
+
+.slider-value {
+  font-size: 14px;
+  color: var(--text-primary, #303133);
+  font-weight: 500;
+}
+
+.slider-marks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.slider-mark {
+  font-size: 12px;
+  color: var(--text-secondary, #909399);
+}
+
+/* 日期选择器样式增强 */
+.enhanced-date-picker {
+  width: 100%;
+}
+
+.date-picker-range {
+  width: 100%;
+}
+
+/* 上传组件样式增强 */
+.enhanced-upload {
+  width: 100%;
+}
+
+.upload-list {
+  margin-top: 16px;
+}
+
+.upload-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-lighter, #ebeef5);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.upload-item-icon {
+  font-size: 24px;
+  color: var(--text-secondary, #909399);
+}
+
+.upload-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.upload-item-name {
+  font-size: 14px;
+  color: var(--text-primary, #303133);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-item-size {
+  font-size: 12px;
+  color: var(--text-secondary, #909399);
+  margin-top: 2px;
+}
+
+.upload-item-progress {
+  margin-top: 4px;
+}
+
+.upload-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 表单验证状态样式 */
+.is-success .form-item-label {
+  color: var(--success-color, #67c23a);
+}
+
+.is-error .form-item-label {
+  color: var(--danger-color, #f56c6c);
+}
+
+.is-warning .form-item-label {
+  color: var(--warning-color, #e6a23c);
+}
+
+/* 表单禁用状态样式 */
+.is-disabled .form-item-label {
+  color: var(--text-placeholder, #c0c4cc);
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .form-item-label {
+    color: var(--text-primary, #e0e0e0);
+  }
+  
+  .form-item-help {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .form-actions {
+    border-top-color: var(--border-base, #4a4a4a);
+  }
+  
+  .input-prefix-icon,
+  .input-suffix-icon {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .input-character-count {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .select-option-description {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .select-group-header {
+    color: var(--text-primary, #e0e0e0);
+    background-color: var(--background-lighter, #363636);
+  }
+  
+  .checkbox-button,
+  .radio-button {
+    border-color: var(--border-base, #4a4a4a);
+  }
+  
+  .checkbox-button.is-checked,
+  .radio-button.is-checked {
+    background-color: var(--primary-light, #1a3a5f);
+  }
+  
+  .checkbox-button-label,
+  .radio-button-label {
+    color: var(--text-primary, #e0e0e0);
+  }
+  
+  .checkbox-button-description,
+  .radio-button-description {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .switch-label {
+    color: var(--text-regular, #c0c0c0);
+  }
+  
+  .slider-label {
+    color: var(--text-regular, #c0c0c0);
+  }
+  
+  .slider-value {
+    color: var(--text-primary, #e0e0e0);
+  }
+  
+  .slider-mark {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .upload-item {
+    border-color: var(--border-base, #4a4a4a);
+  }
+  
+  .upload-item-icon {
+    color: var(--text-secondary, #a0a0a0);
+  }
+  
+  .upload-item-name {
+    color: var(--text-primary, #e0e0e0);
+  }
+  
+  .upload-item-size {
+    color: var(--text-secondary, #a0a0a0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  
+  .checkbox-group,
+  .radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .checkbox-button,
+  .radio-button {
+    width: 100%;
+  }
+  
+  .date-picker-range {
+    width: 100%;
+  }
+}

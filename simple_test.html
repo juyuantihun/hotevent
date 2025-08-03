@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单API测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .error { background-color: #ffe6e6; }
+        .success { background-color: #e6ffe6; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>时间线API测试</h1>
+    
+    <button onclick="testOriginalAPI()">测试原始API</button>
+    <button onclick="testNewAPI()">测试新分页API</button>
+    <button onclick="clearResults()">清空结果</button>
+    
+    <div id="results"></div>
+
+    <script>
+        function addResult(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'result ' + (isError ? 'error' : 'success');
+            div.innerHTML = '<strong>' + new Date().toLocaleTimeString() + '</strong>: ' + message;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testOriginalAPI() {
+            try {
+                addResult('正在测试原始API: /api/timelines/91/events/all');
+                const response = await fetch('/api/timelines/91/events/all');
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult(`原始API成功: 获取到 ${data.data.length} 个事件`);
+                    if (data.data.length > 0) {
+                        addResult(`第一个事件: ${JSON.stringify(data.data[0], null, 2)}`);
+                    }
+                } else {
+                    addResult(`原始API失败: ${data.message}`, true);
+                }
+            } catch (error) {
+                addResult(`原始API错误: ${error.message}`, true);
+            }
+        }
+        
+        async function testNewAPI() {
+            try {
+                addResult('正在测试新分页API: /api/timelines/91/events?page=1&pageSize=4');
+                const response = await fetch('/api/timelines/91/events?page=1&pageSize=4&includeDetails=false');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const events = data.data.events || [];
+                    addResult(`新分页API成功: 获取到 ${events.length} 个事件，总计 ${data.data.total} 个`);
+                    addResult(`分页信息: 当前页 ${data.data.currentPage}/${data.data.totalPages}, 有下一页: ${data.data.hasNext}`);
+                    if (events.length > 0) {
+                        addResult(`第一个事件: ${JSON.stringify(events[0], null, 2)}`);
+                    }
+                } else {
+                    addResult(`新分页API失败: ${data.message}`, true);
+                }
+            } catch (error) {
+                addResult(`新分页API错误: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* 认证相关页面的响应式样式 */
+
+/* 小屏幕设备（手机，小于768px） */
+@media (max-width: 767.98px) {
+  .login-container,
+  .register-container,
+  .forgot-password-container,
+  .reset-password-container {
+    padding: 10px;
+  }
+
+  .login-box,
+  .register-box,
+  .forgot-password-box,
+  .reset-password-box {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .login-header h1,
+  .register-header h1,
+  .forgot-password-header h1,
+  .reset-password-header h1 {
+    font-size: 24px;
+  }
+
+  .login-header p,
+  .register-header p,
+  .forgot-password-header p,
+  .reset-password-header p {
+    font-size: 12px;
+  }
+
+  .login-button,
+  .register-button,
+  .forgot-password-button,
+  .reset-password-button {
+    height: 44px;
+  }
+}
+
+/* 中等屏幕设备（平板，768px到991px） */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .login-box,
+  .register-box,
+  .forgot-password-box,
+  .reset-password-box {
+    max-width: 380px;
+  }
+}
+
+/* 大屏幕设备（桌面，992px及以上） */
+@media (min-width: 992px) {
+  .login-box,
+  .register-box,
+  .forgot-password-box,
+  .reset-password-box {
+    max-width: 420px;
+  }
+}

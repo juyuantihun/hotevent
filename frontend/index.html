@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="国际热点事件管理系统 - 高效管理和分析国际热点事件" />
+    <title>国际热点事件管理系统</title>
+    <!-- 预加载关键CSS -->
+    <link rel="preload" href="/loading.css" as="style" />
+    <link rel="stylesheet" href="/loading.css" />
+    <!-- 禁止浏览器预加载资源，由应用控制预加载 -->
+    <meta http-equiv="x-dns-prefetch-control" content="off" />
+  </head>
+  <body>
+    <!-- 初始加载指示器 -->
+    <div id="app-initial-loading" class="app-initial-loading">
+      <div class="app-initial-loading-spinner"></div>
+      <div class="app-initial-loading-text">正在加载应用...</div>
+    </div>
+    
+    <div id="app"></div>
+    
+    <!-- 移除初始加载指示器的脚本 -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var loading = document.getElementById('app-initial-loading');
+          if (loading) {
+            loading.classList.add('hidden');
+            setTimeout(function() {
+              loading.remove();
+            }, 500);
+          }
+        }, 500);
+      });
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

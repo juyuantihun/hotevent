@@ -1,0 +1,243 @@
+/* 响应式设计增强 */
+
+/* 基础响应式断点 */
+:root {
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1400px;
+}
+
+/* 移动设备优化 */
+@media (max-width: 576px) {
+  /* 调整容器内边距 */
+  .timeline-container,
+  .event-list-container {
+    padding: 10px !important;
+  }
+  
+  /* 调整卡片内边距 */
+  .el-card__body {
+    padding: 12px !important;
+  }
+  
+  /* 调整标题大小 */
+  .page-title {
+    font-size: 20px !important;
+  }
+  
+  .page-subtitle {
+    font-size: 12px !important;
+  }
+  
+  /* 调整按钮组布局 */
+  .action-bar {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  .action-left, .action-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  
+  /* 调整统计卡片布局 */
+  .stats-cards .el-col {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* 调整表单布局 */
+  .el-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  /* 调整搜索表单 */
+  .search-form .el-col {
+    width: 100% !important;
+  }
+  
+  /* 调整时间线卡片布局 */
+  .timeline-cards {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* 调整表格溢出处理 */
+  .el-table {
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+  
+  /* 调整对话框宽度 */
+  .el-dialog {
+    width: 95% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* 平板设备优化 */
+@media (min-width: 577px) and (max-width: 992px) {
+  /* 调整容器内边距 */
+  .timeline-container,
+  .event-list-container {
+    padding: 15px !important;
+  }
+  
+  /* 调整统计卡片布局 */
+  .stats-cards .el-col {
+    width: 50% !important;
+    margin-bottom: 15px !important;
+  }
+  
+  /* 调整时间线卡片布局 */
+  .timeline-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* 调整搜索表单 */
+  .search-form .el-col {
+    width: 50% !important;
+  }
+}
+
+/* 修复溢出问题 */
+.text-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.multi-line-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.multi-line-ellipsis-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 修复布局错乱问题 */
+.flex-wrap-fix {
+  flex-wrap: wrap !important;
+}
+
+.width-full {
+  width: 100% !important;
+}
+
+/* 修复表格在小屏幕上的显示问题 */
+.responsive-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 修复按钮在小屏幕上的堆叠问题 */
+.responsive-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 修复表单在小屏幕上的布局问题 */
+@media (max-width: 768px) {
+  .responsive-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  .responsive-form-item .el-form-item__label {
+    float: none !important;
+    display: block !important;
+    text-align: left !important;
+    padding: 0 0 8px !important;
+  }
+  
+  .responsive-form-item .el-form-item__content {
+    margin-left: 0 !important;
+  }
+}
+
+/* 优化移动设备上的交互体验 */
+@media (max-width: 768px) {
+  /* 增大点击区域 */
+  .el-button {
+    padding: 10px 16px !important;
+  }
+  
+  /* 调整下拉菜单 */
+  .el-dropdown-menu {
+    min-width: 120px !important;
+  }
+  
+  /* 调整表单控件大小 */
+  .el-input__inner,
+  .el-select,
+  .el-date-editor.el-input {
+    height: 40px !important;
+  }
+  
+  /* 调整分页控件 */
+  .el-pagination {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+}
+
+/* 修复区域选择器在移动设备上的显示问题 */
+@media (max-width: 576px) {
+  .region-selector .region-list {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+  
+  .region-selector .region-item {
+    padding: 10px !important;
+  }
+  
+  .region-selector .breadcrumb-container {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding-bottom: 8px !important;
+  }
+}
+
+/* 修复时间线详情视图在移动设备上的显示问题 */
+@media (max-width: 768px) {
+  .timeline-detail-view .detail-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  
+  .timeline-detail-view .header-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  
+  .timeline-detail-view .event-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 2000 !important;
+    background: white !important;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1) !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.3s ease !important;
+  }
+  
+  .timeline-detail-view .event-sidebar.active {
+    transform: translateX(0) !important;
+  }
+}

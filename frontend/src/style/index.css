@@ -1,0 +1,116 @@
+/* 导入主题样式 */
+@import './theme.css';
+@import './dark-mode';
+es.css';
+@import './tss';
+@import './form-compon';
+@import './responsive.css'
+@import './timeline-detail.css';
+@import './region-selector.css';
+@import './create-timeline-form.
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 全局样式重置 */
+* {
+  margin: 0;
+  p0;
+  box-sizing
+}
+
+hbody {
+ 100%;
+  font-familif;
+}
+
+/
+rollbar {
+  width: 6px;
+  height: 6px;
+}
+
+:k {
+1f1f1;
+  border-radius: 3px;
+}
+
+:humb {
+: #c1c1c1;
+  border-radius: 3px;
+}
+
+:er {
+8;
+}
+
+/*/
+ {
+  display;
+  align-items:
+  justify-conten
+}
+
+.n {
+flex;
+  align-items: r;
+  justify-contenetween;
+}
+
+.ncate {
+dden;
+  text-overflow:is;
+  white-space: nowr;
+}
+
+/
+rd {
+  backgroufff;
+  bordex;
+  padding: 20px;
+  box-shadow: 0 2px 10, 0.1);
+  border: 1px so5;
+}
+
+/态标签 */
+g {
+  padding:;
+  border-radis: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.
+f9ff;
+  color: #1890ff
+}
+
+.e {
+;
+  color: #fa8c16;
+}
+
+/
+
+.fade-leave {
+  transition: opacie;
+}
+
+.from,
+o {
+  opacity: 0;
+}
+
+/
+68px) {
+  .page-con
+    margin: 8px;
+    padding: 12px;
+  }
+  
+  .
+  
+  }
+}

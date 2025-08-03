@@ -1,0 +1,19 @@
+{
+  "tests": [
+    {
+      "name": "配置信息测试",
+      "url": "http://localhost:8080/api/deepseek/online-search/config",
+      "method": "GET"
+    },
+    {
+      "name": "连接测试",
+      "url": "http://localhost:8080/api/deepseek/online-search/test/connection",
+      "method": "GET"
+    },
+    {
+      "name": "最新事件测试",
+      "url": "http://localhost:8080/api/deepseek/online-search/test/latest-events?limit=2",
+      "method": "POST"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:18'
+        }
+    }
+    
+    environment {
+        HOME = '.'
+        CI = 'true'
+    }
+    
+    stages {
+        stage('安装依赖') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+        
+        stage('代码检查') {
+            steps {
+                sh 'npm run lint'
+                sh 'npm run type-check'
+            }
+        }
+        
+        stage('单元测试') {
+            steps {
+                sh 'npm run test:coverage'
+            }
+            post {
+                always {
+                    junit 'test-results/jest/results.xml'
+                    publishHTML(target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'test-results/unit/html',
+                        reportFiles: 'index.html',
+                        reportName: '单元测试报告'
+                    ])
+                    publishCoverage(
+                        adapters: [istanbulCoberturaAdapter('coverage/cobertura-coverage.xml')],
+                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                    )
+                }
+            }
+        }
+        
+        stage('端到端测试') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.42.1-focal'
+                    args '--ipc=host'
+                }
+            }
+            steps {
+                sh 'npm ci'
+                sh 'npx playwright install --with-deps'
+                sh 'npm run test:e2e'
+            }
+            post {
+                always {
+                    publishHTML(target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'playwright-report',
+                        reportFiles: 'index.html',
+                        reportName: '端到端测试报告'
+                    ])
+                }
+            }
+        }
+        
+        stage('构建') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        
+        stage('SonarQube分析') {
+            environment {
+                scannerHome = tool 'SonarQubeScanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        
+        stage('部署到测试环境') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                sh 'rsync -rav --delete dist/ user@test-server:/var/www/html/'
+            }
+        }
+        
+        stage('部署到生产环境') {
+            when {
+                branch 'main'
+            }
+            input {
+                message "是否部署到生产环境?"
+                ok "是"
+            }
+            steps {
+                sh 'rsync -rav --delete dist/ user@prod-server:/var/www/html/'
+            }
+        }
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: 'dist/**/*', fingerprint: true
+            cleanWs()
+        }
+        success {
+            echo '构建成功!'
+        }
+        failure {
+            echo '构建失败!'
+        }
+    }
+}

@@ -1,0 +1,340 @@
+# 时间线增强功能配置文件
+# 包含时间段分割、地理信息处理、API调用等相关配置
+
+timeline:
+  enhancement:
+    # 时间段分割配置
+    segmentation:
+      # 最大时间跨度（天）
+      max-span-days: 7
+      # 每个时间段最小事件数量
+      min-events-per-segment: 5
+      # 最大分割段数
+      max-segments: 10
+      # 是否启用并行处理
+      parallel-processing: true
+      # 智能分割阈值
+      intelligent-threshold: 15
+      # 每天预期事件数量
+      expected-events-per-day: 3
+      # 每个时间段最大事件数量
+      max-events-per-segment: 20
+      # 分割算法类型：FIXED_DAYS, INTELLIGENT, ADAPTIVE
+      algorithm-type: INTELLIGENT
+      
+    # 地理信息处理配置
+    geographic:
+      # 坐标缓存TTL（秒）
+      coordinate-cache-ttl: 3600
+      # 默认坐标配置
+      default-coordinates:
+        # 是否启用默认坐标
+        enabled: true
+        # 国家级别回退到首都
+        fallback-to-capital: true
+        # 地区级别回退到首府
+        fallback-to-region-center: true
+        # 城市级别回退到地区中心
+        fallback-to-city-center: true
+      # 坐标解析配置
+      parsing:
+        # 解析超时时间（毫秒）
+        timeout: 5000
+        # 最大重试次数
+        max-retries: 3
+        # 批量处理大小
+        batch-size: 50
+        # 是否启用智能识别
+        enable-smart-recognition: true
+      # 缓存配置
+      cache:
+        # 最大缓存条目数
+        max-entries: 10000
+        # 缓存过期时间（秒）
+        expire-after-write: 7200
+        # 缓存刷新时间（秒）
+        refresh-after-write: 3600
+        # 是否启用统计
+        enable-stats: true
+        
+    # API调用增强配置
+    api:
+      # 火山引擎API配置
+      volcengine:
+        # 最大token数
+        max-tokens: 4000
+        # 超时时间（毫秒）
+        timeout: 30000
+        # 重试次数
+        retry-count: 3
+        # 批量处理大小
+        batch-size: 5
+        # 并发线程数
+        concurrent-threads: 3
+        # 请求间隔（毫秒）
+        request-interval: 1000
+        
+      # DeepSeek API配置
+      deepseek:
+        # 最大token数
+        max-tokens: 2000
+        # 超时时间（毫秒）
+        timeout: 20000
+        # 重试次数
+        retry-count: 2
+        # 批量处理大小
+        batch-size: 3
+        # 并发线程数
+        concurrent-threads: 2
+        # 请求间隔（毫秒）
+        request-interval: 1500
+        
+      # 并发调用配置
+      concurrency:
+        # 最大并发调用数
+        max-concurrent-calls: 10
+        # 调用超时时间（毫秒）
+        call-timeout: 30000
+        # 线程池核心大小
+        core-pool-size: 5
+        # 线程池最大大小
+        max-pool-size: 20
+        # 队列容量
+        queue-capacity: 100
+        # 线程空闲时间（秒）
+        keep-alive-time: 60
+        
+      # 通用API配置
+      common:
+        # 响应完整性检查
+        completeness-check:
+          # 是否启用
+          enabled: true
+          # 最小事件数量阈值
+          min-event-threshold: 3
+          # 响应长度阈值
+          min-response-length: 100
+          # 关键字检查
+          required-keywords: ["事件", "时间", "地点"]
+        # 重试策略
+        retry-strategy:
+          # 重试算法：FIXED, EXPONENTIAL, LINEAR
+          algorithm: EXPONENTIAL
+          # 初始延迟（毫秒）
+          initial-delay: 1000
+          # 最大延迟（毫秒）
+          max-delay: 10000
+          # 延迟倍数
+          multiplier: 2.0
+          
+    # 性能监控配置
+    monitoring:
+      # 是否启用性能监控
+      enabled: true
+      # 监控指标收集间隔（秒）
+      metrics-interval: 30
+      # 历史数据保留时间（小时）
+      history-retention-hours: 24
+      # 最大历史数据点数
+      max-history-points: 1000
+      # 性能阈值配置
+      thresholds:
+        # 时间段分割处理时间阈值（毫秒）
+        segmentation-time: 5000
+        # 地理信息处理时间阈值（毫秒）
+        geographic-processing-time: 3000
+        # API调用时间阈值（毫秒）
+        api-call-time: 15000
+        # 内存使用阈值（MB）
+        memory-usage: 512
+        # CPU使用率阈值（%）
+        cpu-usage: 80.0
+        # 缓存命中率阈值（%）
+        cache-hit-rate: 70.0
+        # 并发线程数阈值
+        concurrent-threads: 50
+      # 告警配置
+      alerts:
+        # 是否启用告警
+        enabled: true
+        # 告警阈值触发次数
+        threshold-trigger-count: 3
+        # 告警冷却时间（秒）
+        cooldown-period: 300
+        # 告警通知方式：LOG, EMAIL, WEBHOOK
+        notification-methods: ["LOG"]
+        # 告警严重级别：LOW, MEDIUM, HIGH, CRITICAL
+        severity-levels:
+          memory-usage: HIGH
+          cpu-usage: HIGH
+          api-call-time: MEDIUM
+          cache-hit-rate: LOW
+        
+    # 缓存配置
+    cache:
+      # 时间段分割结果缓存
+      segmentation:
+        # 是否启用
+        enabled: true
+        # 最大条目数
+        max-entries: 1000
+        # 过期时间（秒）
+        expire-after-write: 1800
+        # 刷新时间（秒）
+        refresh-after-write: 900
+        
+      # 地理信息缓存
+      geographic:
+        # 是否启用
+        enabled: true
+        # 最大条目数
+        max-entries: 5000
+        # 过期时间（秒）
+        expire-after-write: 7200
+        # 刷新时间（秒）
+        refresh-after-write: 3600
+        
+      # API响应缓存
+      api-response:
+        # 是否启用
+        enabled: true
+        # 最大条目数
+        max-entries: 2000
+        # 过期时间（秒）
+        expire-after-write: 3600
+        # 刷新时间（秒）
+        refresh-after-write: 1800
+        
+    # 性能优化配置
+    performance:
+      # 虚拟滚动配置
+      virtual-scroll:
+        # 是否启用虚拟滚动
+        enabled: true
+        # 视口高度（像素）
+        viewport-height: 600
+        # 单项高度（像素）
+        item-height: 120
+        # 缓冲区大小
+        buffer-size: 5
+        # 预加载阈值
+        preload-threshold: 100
+        
+      # 懒加载配置
+      lazy-loading:
+        # 是否启用懒加载
+        enabled: true
+        # 分块大小
+        chunk-size: 50
+        # 加载延迟（毫秒）
+        load-delay: 200
+        # 最大并发加载数
+        max-concurrent-loads: 3
+        
+      # 内存优化配置
+      memory:
+        # 最大缓存大小（MB）
+        max-cache-size: 100
+        # 垃圾回收阈值（MB）
+        gc-threshold: 80
+        # 内存监控间隔（秒）
+        monitoring-interval: 60
+        # 自动清理过期数据
+        auto-cleanup: true
+        
+      # 渲染优化配置
+      rendering:
+        # 防抖延迟（毫秒）
+        debounce-delay: 16
+        # 节流间隔（毫秒）
+        throttle-interval: 100
+        # 最大渲染项数
+        max-render-items: 1000
+        # 启用GPU加速
+        enable-gpu-acceleration: true
+        
+    # 前端UI配置
+    frontend:
+      timeline:
+        # 隐藏中间时间标签
+        hide-middle-time-labels: true
+        # 显示事件坐标
+        show-event-coordinates: true
+        # 启用平滑滚动
+        enable-smooth-scrolling: true
+        # 卡片动画持续时间（毫秒）
+        card-animation-duration: 300
+        # 时间线指示器样式
+        indicator-style: "minimal"
+        # 事件卡片最大宽度（像素）
+        max-card-width: 400
+        # 时间线容器最大高度（像素）
+        max-container-height: 800
+        
+    # 数据验证配置
+    validation:
+      # 时间段验证
+      time-segment:
+        # 最小时间跨度（小时）
+        min-span-hours: 1
+        # 最大时间跨度（天）
+        max-span-days: 365
+        # 是否允许未来时间
+        allow-future-time: false
+        
+      # 地理信息验证
+      geographic:
+        # 纬度范围
+        latitude-range: [-90.0, 90.0]
+        # 经度范围
+        longitude-range: [-180.0, 180.0]
+        # 坐标精度（小数位数）
+        coordinate-precision: 6
+        # 是否验证坐标有效性
+        validate-coordinates: true
+        
+      # 事件数据验证
+      event-data:
+        # 事件标题最小长度
+        min-title-length: 5
+        # 事件标题最大长度
+        max-title-length: 200
+        # 事件描述最大长度
+        max-description-length: 2000
+        # 必需字段
+        required-fields: ["title", "eventTime", "location"]
+        
+    # 错误处理配置
+    error-handling:
+      # 时间段分割错误处理
+      segmentation:
+        # 分割失败时是否回退到单次调用
+        fallback-to-single-call: true
+        # 部分失败时是否继续处理
+        continue-on-partial-failure: true
+        # 最大失败容忍度（百分比）
+        max-failure-tolerance: 30.0
+        
+      # 地理信息处理错误处理
+      geographic:
+        # 解析失败时是否使用默认坐标
+        use-default-on-failure: true
+        # 是否跳过无效坐标
+        skip-invalid-coordinates: true
+        # 错误重试间隔（毫秒）
+        retry-interval: 2000
+        
+      # API调用错误处理
+      api:
+        # 调用失败时是否切换API
+        switch-api-on-failure: true
+        # 降级处理策略：SKIP, RETRY, FALLBACK
+        degradation-strategy: FALLBACK
+        # 熔断器配置
+        circuit-breaker:
+          # 失败阈值
+          failure-threshold: 5
+          # 超时时间（毫秒）
+          timeout: 60000
+          # 半开状态最大调用次数
+          half-open-max-calls: 3

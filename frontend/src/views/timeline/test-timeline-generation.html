@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间线生成测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #409eff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #337ab7;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #409eff;
+            transition: width 0.3s ease;
+        }
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #409eff;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: #f56c6c;
+            background-color: #fef0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #67c23a;
+            background-color: #f0f9ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>时间线生成测试</h1>
+    
+    <form id="timelineForm">
+        <div class="form-group">
+            <label for="name">时间线名称:</label>
+            <input type="text" id="name" name="name" required placeholder="请输入时间线名称">
+        </div>
+        
+        <div class="form-group">
+            <label for="description">时间线描述:</label>
+            <textarea id="description" name="description" rows="3" required placeholder="请输入时间线描述，将用于智能事件检索"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="regionIds">目标地区:</label>
+            <select id="regionIds" name="regionIds" multiple required>
+                <option value="1">全球</option>
+                <option value="2">亚洲</option>
+                <option value="3">欧洲</option>
+                <option value="4">美洲</option>
+                <option value="5">中国</option>
+                <option value="6">美国</option>
+                <option value="7">俄罗斯</option>
+                <option value="8">以色列</option>
+                <option value="9">伊朗</option>
+                <option value="10">黎巴嫩</option>
+                <option value="11">哈马斯</option>
+                <option value="12">乌克兰</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="startTime">开始时间:</label>
+            <input type="datetime-local" id="startTime" name="startTime" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="endTime">结束时间:</label>
+            <input type="datetime-local" id="endTime" name="endTime" required>
+        </div>
+        
+        <div class="form-group">
+            <label>生成选项:</label>
+            <label><input type="checkbox" name="options" value="enableValidation" checked> 启用事件验证</label>
+            <label><input type="checkbox" name="options" value="enableDeduplication" checked> 启用事件去重</label>
+            <label><input type="checkbox" name="options" value="enableRelationAnalysis" checked> 启用关系分析</label>
+        </div>
+        
+        <button type="submit" id="generateBtn">开始生成</button>
+        <button type="button" id="cancelBtn" class="hidden">取消生成</button>
+    </form>
+    
+    <div id="progressContainer" class="progress-container hidden">
+        <h3>生成进度</h3>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div id="currentStep">准备中...</div>
+        <div class="progress-stats">
+            <div class="stat-item">
+                <div class="stat-label">已检索事件</div>
+                <div id="eventCount" class="stat-value">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">已建立关系</div>
+                <div id="relationCount" class="stat-value">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">耗时</div>
+                <div id="duration" class="stat-value">0秒</div>
+            </div>
+        </div>
+        <div id="progressMessage"></div>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        let currentTimelineId = null;
+        let progressTimer = null;
+        let startTime = null;
+        
+        // API基础URL
+        const API_BASE = '/api';
+        
+        // 表单提交处理
+        document.getElementById('timelineForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                regionIds: Array.from(formData.getAll('regionIds')).map(id => parseInt(id)),
+                startTime: formData.get('startTime') + ':00',
+                endTime: formData.get('endTime') + ':00',
+                options: formData.getAll('options')
+            };
+            
+            try {
+                showResult('开始生成时间线...', 'info');
+                
+                const response = await fetch(`${API_BASE}/timelines/generate/async`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data && result.data.id) {
+                    currentTimelineId = result.data.id;
+                    startProgressTracking();
+                    showResult('时间线生成任务已启动', 'success');
+                } else {
+                    showResult('生成失败: ' + (result.message || '未知错误'), 'error');
+                }
+            } catch (error) {
+                showResult('生成失败: ' + error.message, 'error');
+            }
+        });
+        
+        // 取消生成
+        document.getElementById('cancelBtn').addEventListener('click', async () => {
+            if (!currentTimelineId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/timelines/${currentTimelineId}/cancel-generation`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    showResult('正在取消生成...', 'info');
+                } else {
+                    showResult('取消失败: ' + (result.message || '未知错误'), 'error');
+                }
+            } catch (error) {
+                showResult('取消失败: ' + error.message, 'error');
+            }
+        });
+        
+        // 开始进度跟踪
+        function startProgressTracking() {
+            document.getElementById('progressContainer').classList.remove('hidden');
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('cancelBtn').classList.remove('hidden');
+            
+            startTime = Date.now();
+            
+            progressTimer = setInterval(async () => {
+                if (!currentTimelineId) {
+                    stopProgressTracking();
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE}/timelines/${currentTimelineId}/generation-progress`);
+                    const result = await response.json();
+                    
+                    if (result.code === 200 && result.data) {
+                        updateProgress(result.data);
+                    }
+                } catch (error) {
+                    console.error('获取进度失败:', error);
+                }
+            }, 2000);
+        }
+        
+        // 停止进度跟踪
+        function stopProgressTracking() {
+            if (progressTimer) {
+                clearInterval(progressTimer);
+                progressTimer = null;
+            }
+            
+            document.getElementById('generateBtn').disabled = false;
+            document.getElementById('cancelBtn').classList.add('hidden');
+            currentTimelineId = null;
+        }
+        
+        // 更新进度显示
+        function updateProgress(data) {
+            const progress = data.percentage || 0;
+            const status = data.status || 'GENERATING';
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentStep').textContent = data.currentStep || '处理中...';
+            document.getElementById('eventCount').textContent = data.eventCount || 0;
+            document.getElementById('relationCount').textContent = data.relationCount || 0;
+            
+            // 计算耗时
+            if (startTime) {
+                const duration = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('duration').textContent = formatDuration(duration);
+            }
+            
+            document.getElementById('progressMessage').textContent = data.message || '';
+            
+            // 检查状态
+            if (status === 'COMPLETED') {
+                showResult('时间线生成完成！', 'success');
+                stopProgressTracking();
+                setTimeout(() => {
+                    document.getElementById('progressContainer').classList.add('hidden');
+                }, 3000);
+            } else if (status === 'FAILED') {
+                showResult('时间线生成失败: ' + (data.errorMessage || '未知错误'), 'error');
+                stopProgressTracking();
+            } else if (status === 'CANCELLED') {
+                showResult('时间线生成已取消', 'info');
+                stopProgressTracking();
+            }
+        }
+        
+        // 格式化持续时间
+        function formatDuration(seconds) {
+            if (seconds < 60) return seconds + '秒';
+            
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            
+            if (minutes < 60) {
+                return minutes + '分钟' + remainingSeconds + '秒';
+            }
+            
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            
+            return hours + '小时' + remainingMinutes + '分钟';
+        }
+        
+        // 显示结果
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = type;
+        }
+        
+        // 设置默认时间范围（最近一个月）
+        window.addEventListener('load', () => {
+            const now = new Date();
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('startTime').value = oneMonthAgo.toISOString().slice(0, 16);
+            document.getElementById('endTime').value = now.toISOString().slice(0, 16);
+        });
+    </script>
+</body>
+</html>

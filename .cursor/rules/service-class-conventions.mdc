@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Service类必须是接口类型。
+- 所有Service类方法的实现必须在实现该Service接口的ServiceImpl类中完成。
+- 所有ServiceImpl类必须使用@Service注解。
+- ServiceImpl类中的所有依赖必须使用@Autowired注入，且不使用构造方法，除非另有说明。
+- ServiceImpl方法的返回对象应为DTO，除非确有必要，不应返回实体类。
+- 需要校验记录是否存在的逻辑，必须使用对应的Repository方法并结合.orElseThrow lambda方法。
+- 多次顺序数据库操作，必须使用@Transactional或transactionTemplate。

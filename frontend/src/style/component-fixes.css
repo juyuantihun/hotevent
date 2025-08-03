@@ -1,0 +1,271 @@
+/* 组件样式冲突修复 */
+
+/* 修复Element Plus组件与Tailwind CSS的冲突 */
+.el-button {
+  @apply font-normal;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  @apply w-full;
+}
+
+/* 修复表单组件样式冲突 */
+.el-form-item {
+  margin-bottom: 18px;
+}
+
+.el-form-item__error {
+  padding-top: 2px;
+}
+
+/* 修复表格组件样式冲突 */
+.el-table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.el-table .cell {
+  word-break: break-word;
+}
+
+/* 修复下拉菜单样式冲突 */
+.el-dropdown-menu {
+  min-width: 120px;
+}
+
+.el-dropdown-menu__item {
+  line-height: 36px;
+  padding: 0 16px;
+}
+
+/* 修复对话框样式冲突 */
+.el-dialog {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-lighter);
+}
+
+.el-dialog__body {
+  padding: 20px;
+}
+
+.el-dialog__footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-lighter);
+}
+
+/* 修复标签样式冲突 */
+.el-tag {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.el-tag .el-tag__close {
+  right: -4px;
+}
+
+/* 修复分页组件样式冲突 */
+.el-pagination {
+  padding: 0;
+  margin: 16px 0;
+  font-weight: normal;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.el-pagination .el-select .el-input {
+  width: 110px;
+}
+
+/* 修复加载状态样式冲突 */
+.el-loading-mask {
+  z-index: 1000;
+}
+
+/* 修复日期选择器样式冲突 */
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+  width: 100%;
+}
+
+.el-date-editor--daterange.el-input,
+.el-date-editor--daterange.el-input__inner,
+.el-date-editor--timerange.el-input,
+.el-date-editor--timerange.el-input__inner {
+  width: 350px;
+}
+
+/* 修复选择器样式冲突 */
+.el-select {
+  width: 100%;
+}
+
+/* 修复按钮组样式冲突 */
+.el-button-group {
+  display: inline-flex;
+}
+
+.el-button-group .el-button {
+  margin-left: -1px;
+}
+
+.el-button-group .el-button:first-child {
+  margin-left: 0;
+}
+
+/* 修复卡片样式冲突 */
+.el-card__header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-lighter);
+}
+
+.el-card__body {
+  padding: 20px;
+}
+
+/* 修复滑块样式冲突 */
+.el-slider__runway {
+  margin: 16px 0;
+}
+
+/* 修复开关样式冲突 */
+.el-switch__core {
+  margin: 0;
+}
+
+/* 修复树形控件样式冲突 */
+.el-tree-node__content {
+  height: 32px;
+}
+
+/* 修复折叠面板样式冲突 */
+.el-collapse-item__header {
+  height: 48px;
+  line-height: 48px;
+}
+
+/* 修复步骤条样式冲突 */
+.el-step__title {
+  font-size: 14px;
+  line-height: 32px;
+}
+
+/* 修复标签页样式冲突 */
+.el-tabs__item {
+  height: 40px;
+  line-height: 40px;
+}
+
+/* 修复表单验证样式 */
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-textarea__inner {
+  border-color: var(--danger-color);
+}
+
+/* 修复响应式表格在小屏幕上的显示 */
+@media (max-width: 768px) {
+  .responsive-table .el-table__header-wrapper,
+  .responsive-table .el-table__body-wrapper {
+    overflow-x: auto;
+  }
+  
+  .responsive-table .el-table__body {
+    min-width: 800px;
+  }
+}
+
+/* 修复暗色模式下的组件样式冲突 */
+@media (prefers-color-scheme: dark) {
+  .el-button--default {
+    background-color: var(--background-lighter);
+    border-color: var(--border-base);
+    color: var(--text-regular);
+  }
+  
+  .el-button--default:hover,
+  .el-button--default:focus {
+    background-color: var(--background-light);
+    border-color: var(--border-light);
+    color: var(--text-primary);
+  }
+  
+  .el-tabs__item {
+    color: var(--text-regular);
+  }
+  
+  .el-tabs__item.is-active {
+    color: var(--primary-color);
+  }
+  
+  .el-tabs__active-bar {
+    background-color: var(--primary-color);
+  }
+  
+  .el-tabs__nav-wrap::after {
+    background-color: var(--border-base);
+  }
+  
+  .el-collapse-item__header {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+    border-bottom-color: var(--border-base);
+  }
+  
+  .el-collapse-item__content {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+  }
+  
+  .el-tree {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+  }
+  
+  .el-tree-node:focus > .el-tree-node__content {
+    background-color: var(--background-lighter);
+  }
+  
+  .el-select-dropdown {
+    background-color: var(--background-light);
+    border-color: var(--border-base);
+  }
+  
+  .el-select-dropdown__item {
+    color: var(--text-regular);
+  }
+  
+  .el-select-dropdown__item.hover,
+  .el-select-dropdown__item:hover {
+    background-color: var(--background-lighter);
+  }
+  
+  .el-date-table td.available:hover {
+    color: var(--primary-color);
+  }
+  
+  .el-date-table td.current:not(.disabled) {
+    background-color: var(--primary-color) !important;
+  }
+  
+  .el-date-picker__header-label {
+    color: var(--text-regular);
+  }
+  
+  .el-picker-panel {
+    background-color: var(--background-light);
+    border-color: var(--border-base);
+    color: var(--text-regular);
+  }
+  
+  .el-picker-panel__footer {
+    background-color: var(--background-lighter);
+    border-top-color: var(--border-base);
+  }
+}

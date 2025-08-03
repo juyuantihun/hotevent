@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- 必须使用@Entity注解标注实体类。
+- 必须使用@Data注解（来自Lombok）标注实体类，除非在提示中另有说明。
+- 必须使用@Id和@GeneratedValue(strategy=GenerationType.IDENTITY)标注实体ID。
+- 关系映射必须使用FetchType.LAZY，除非在提示中另有说明。
+- 根据最佳实践正确标注实体属性，例如：@Size、@NotEmpty、@Email等。

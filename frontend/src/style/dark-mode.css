@@ -1,0 +1,251 @@
+/* 暗色模式专用样式 */
+
+/* 暗色模式下的元素样式覆盖 */
+@media (prefers-color-scheme: dark) {
+  /* 基础元素 */
+  body {
+    background-color: var(--background-base);
+    color: var(--text-regular);
+  }
+  
+  /* 卡片容器 */
+  .event-list-container,
+  .timeline-container {
+    background-color: var(--background-base);
+  }
+  
+  .search-card,
+  .table-card,
+  .stat-card,
+  .timeline-card,
+  .el-card {
+    background-color: var(--background-light) !important;
+    border-color: var(--border-light) !important;
+    color: var(--text-regular);
+  }
+  
+  /* 标题和文本 */
+  .page-title,
+  .card-title,
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+  }
+  
+  .page-subtitle,
+  .stat-label,
+  .event-time,
+  .event-location,
+  .meta-item,
+  .create-time,
+  .update-time {
+    color: var(--text-secondary);
+  }
+  
+  /* 表单元素 */
+  .el-form-item__label {
+    color: var(--text-regular);
+  }
+  
+  .el-input__inner,
+  .el-textarea__inner,
+  .el-select-dropdown__item,
+  .el-date-picker,
+  .el-date-table td {
+    background-color: var(--background-lighter);
+    color: var(--text-regular);
+    border-color: var(--border-base);
+  }
+  
+  .el-input.is-disabled .el-input__inner {
+    background-color: var(--background-base);
+    color: var(--text-secondary);
+  }
+  
+  /* 下拉菜单 */
+  .el-dropdown-menu {
+    background-color: var(--background-light);
+    border-color: var(--border-base);
+  }
+  
+  .el-dropdown-menu__item {
+    color: var(--text-regular);
+  }
+  
+  .el-dropdown-menu__item:hover {
+    background-color: var(--background-lighter);
+  }
+  
+  /* 表格 */
+  .el-table {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+  }
+  
+  .el-table tr {
+    background-color: var(--background-light);
+  }
+  
+  .el-table th {
+    background-color: var(--background-lighter);
+    color: var(--text-primary);
+  }
+  
+  .el-table td, 
+  .el-table th.is-leaf {
+    border-bottom-color: var(--border-base);
+  }
+  
+  .el-table--striped .el-table__body tr.el-table__row--striped td {
+    background-color: var(--background-lighter);
+  }
+  
+  .el-table--enable-row-hover .el-table__body tr:hover > td {
+    background-color: var(--background-lighter);
+  }
+  
+  /* 分页 */
+  .el-pagination {
+    color: var(--text-regular);
+  }
+  
+  .el-pagination button {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+  }
+  
+  .el-pagination .el-select .el-input {
+    color: var(--text-regular);
+  }
+  
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next {
+    background-color: var(--background-light);
+    color: var(--text-regular);
+  }
+  
+  /* 对话框 */
+  .el-dialog {
+    background-color: var(--background-light);
+  }
+  
+  .el-dialog__title {
+    color: var(--text-primary);
+  }
+  
+  .el-dialog__body {
+    color: var(--text-regular);
+  }
+  
+  /* 标签 */
+  .el-tag {
+    border-color: transparent;
+  }
+  
+  /* 时间线特有元素 */
+  .timeline-view .timeline-container,
+  .timeline-view .event-sidebar,
+  .graph-container {
+    background-color: var(--background-light);
+    border-color: var(--border-base);
+  }
+  
+  .timeline-header-controls,
+  .sidebar-header,
+  .graph-controls {
+    background-color: var(--background-lighter);
+    border-color: var(--border-base);
+  }
+  
+  .time-axis {
+    border-bottom-color: var(--border-base);
+  }
+  
+  .marker-line {
+    background-color: var(--border-light);
+  }
+  
+  .marker-label {
+    color: var(--text-secondary);
+  }
+  
+  .node-popup {
+    background-color: var(--background-light);
+    border-color: var(--border-base);
+    box-shadow: var(--box-shadow-base);
+  }
+  
+  /* 区域选择器特有元素 */
+  .region-item {
+    border-color: var(--border-light);
+  }
+  
+  .region-item:hover {
+    background-color: var(--background-lighter);
+  }
+  
+  .region-item.is-selected {
+    background-color: var(--primary-light);
+  }
+  
+  .breadcrumb-container {
+    border-bottom-color: var(--border-base);
+  }
+  
+  /* 统计卡片 */
+  .stat-content {
+    background-color: var(--background-lighter);
+  }
+  
+  .stat-number {
+    color: var(--primary-color);
+  }
+  
+  /* 时间线卡片 */
+  .timeline-stats {
+    background-color: var(--background-lighter);
+  }
+  
+  .timeline-line::before {
+    background-color: var(--border-base);
+  }
+  
+  .more-nodes {
+    background-color: var(--background-lighter);
+    color: var(--text-secondary);
+  }
+  
+  .card-footer {
+    border-top-color: var(--border-light);
+  }
+  
+  /* 进度条和加载状态 */
+  .el-loading-mask {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .el-loading-spinner .path {
+    stroke: var(--primary-color);
+  }
+  
+  .el-progress-bar__outer {
+    background-color: var(--border-base);
+  }
+  
+  /* 空状态 */
+  .el-empty__description {
+    color: var(--text-secondary);
+  }
+  
+  /* 滚动条 */
+  ::-webkit-scrollbar-track {
+    background: var(--background-lighter);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-base);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-light);
+  }
+}

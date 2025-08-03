@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- 必须使用@RestController注解标注控制器类。
+- 必须使用@RequestMapping指定类级别的API路由，例如("/api/user")。
+- 类方法必须使用最佳实践的HTTP方法注解，例如创建= @PostMapping("/create")等。
+- 类方法中的所有依赖必须使用@Autowired注入，且不使用构造方法，除非另有说明。
+- 方法返回对象必须为ApiResponse类型的ResponseEntity。
+- 所有类方法逻辑必须实现于try..catch块中。
+- catch块中捕获的错误必须由自定义GlobalExceptionHandler类处理。
