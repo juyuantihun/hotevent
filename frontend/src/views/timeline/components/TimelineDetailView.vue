@@ -384,10 +384,14 @@
                   <span v-else>-</span>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="120" fixed="right">
+              <el-table-column label="操作" width="180" fixed="right">
                 <template #default="{ row }">
-                  <el-button @click="selectEvent(row)" text size="small">
+                  <el-button @click="selectEvent(row)" text size="small" type="primary">
                     查看详情
+                  </el-button>
+                  <el-button @click="removeEventFromTimeline(row)" text size="small" type="danger" 
+                    :loading="removingEventIds.includes(row.id)">
+                    移除
                   </el-button>
                 </template>
               </el-table-column>
@@ -563,6 +567,9 @@ const exportOptions = reactive({
 const exportTaskId = ref('')
 const exportProgress = ref(0)
 const exportStatus = ref('')
+
+// 删除事件相关状态
+const removingEventIds = ref<string[]>([])
 
 // 拖拽相关状态
 const isDragging = ref(false)
@@ -805,6 +812,66 @@ const timeMarkers = computed(() => {
 })
 
 // 方法
+
+// 从时间线中移除事件
+const removeEventFromTimeline = async (event: any) => {
+  if (!currentTimeline.value?.id || !event.id) {
+    ElMessage.error('无法移除事件：缺少必要的ID信息')
+    return
+  }
+
+  try {
+    // 确认对话框
+    await ElMessageBox.confirm(
+      `确定要从时间线中移除事件"${event.title}"吗？这不会删除事件本身，只是解除与当前时间线的关联。`,
+      '确认移除',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+
+    // 添加到加载状态
+    removingEventIds.value.push(event.id)
+
+    // 调用API移除事件与时间线的关联
+    const response = await fetch(`/api/timelines/${currentTimeline.value.id}/events/${event.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP错误! 状态: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    if (result.code === 200) {
+      ElMessage.success('事件已从时间线中移除')
+      
+      // 重新加载时间线数据
+      if (currentTimeline.value.id) {
+        await loadTimelineDetail(currentTimeline.value.id)
+      }
+    } else {
+      throw new Error(result.message || '移除事件失败')
+    }
+  } catch (error: any) {
+    if (error.message !== 'cancel') {
+      console.error('移除事件失败:', error)
+      ElMessage.error(error.message || '移除事件失败，请稍后重试')
+    }
+  } finally {
+    // 从加载状态中移除
+    const index = removingEventIds.value.indexOf(event.id)
+    if (index > -1) {
+      removingEventIds.value.splice(index, 1)
+    }
+  }
+}
 
 // 格式化坐标信息
 const formatCoordinates = (coordinates: any) => {
