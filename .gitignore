@@ -83,3 +83,7 @@ debug_*.sql
 
 # Documentation temp files
 *.md.backup
+
+# Cursor/IDE configuration with sensitive data
+.cursor/
+*.cursor/
