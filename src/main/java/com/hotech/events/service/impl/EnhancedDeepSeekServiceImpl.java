@@ -743,6 +743,33 @@ public class EnhancedDeepSeekServiceImpl implements EnhancedDeepSeekService, Ini
                         event.setCredibilityScore(((Number) eventMap.get("credibilityScore")).doubleValue());
                     }
 
+                    // 解析经纬度坐标
+                    if (eventMap.containsKey("latitude")) {
+                        try {
+                            Object latObj = eventMap.get("latitude");
+                            if (latObj instanceof Number) {
+                                event.setLatitude(((Number) latObj).doubleValue());
+                            } else if (latObj instanceof String) {
+                                event.setLatitude(Double.parseDouble((String) latObj));
+                            }
+                        } catch (Exception e) {
+                            log.warn("解析纬度失败: {}", eventMap.get("latitude"));
+                        }
+                    }
+
+                    if (eventMap.containsKey("longitude")) {
+                        try {
+                            Object lngObj = eventMap.get("longitude");
+                            if (lngObj instanceof Number) {
+                                event.setLongitude(((Number) lngObj).doubleValue());
+                            } else if (lngObj instanceof String) {
+                                event.setLongitude(Double.parseDouble((String) lngObj));
+                            }
+                        } catch (Exception e) {
+                            log.warn("解析经度失败: {}", eventMap.get("longitude"));
+                        }
+                    }
+
                     events.add(event);
                 }
 

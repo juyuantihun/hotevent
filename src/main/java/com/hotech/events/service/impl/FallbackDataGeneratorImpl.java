@@ -117,6 +117,11 @@ public class FallbackDataGeneratorImpl implements FallbackDataGenerator {
             event.setKeywords(Arrays.asList(eventTemplate[3], "重要事件", "历史"));
             event.setSources(Arrays.asList("历史记录", "新闻报道", "官方发布"));
             
+            // 添加模拟坐标
+            double[] coordinates = getSimulatedCoordinatesForFallback(i);
+            event.setLatitude(coordinates[0]);
+            event.setLongitude(coordinates[1]);
+            
             events.add(event);
         }
         
@@ -172,6 +177,11 @@ public class FallbackDataGeneratorImpl implements FallbackDataGenerator {
                 event.setObject("民众");
                 event.setKeywords(Arrays.asList(regionName, eventTemplate[2], "发展"));
                 event.setSources(Arrays.asList("官方媒体", "政府公告"));
+                
+                // 添加基于地区的坐标
+                double[] coordinates = getCoordinatesForRegion(regionName, i);
+                event.setLatitude(coordinates[0]);
+                event.setLongitude(coordinates[1]);
                 
                 events.add(event);
             }
@@ -361,5 +371,67 @@ public class FallbackDataGeneratorImpl implements FallbackDataGenerator {
         // 目前使用模拟逻辑
         List<String> locations = Arrays.asList("北京", "上海", "广州", "深圳", "杭州", "南京");
         return locations.get(new Random().nextInt(locations.size()));
+    }
+    
+    /**
+     * 获取备用数据的模拟坐标
+     * 
+     * @param index 索引
+     * @return 坐标数组 [纬度, 经度]
+     */
+    private double[] getSimulatedCoordinatesForFallback(int index) {
+        // 预定义一些主要城市的坐标
+        double[][] cityCoordinates = {
+            {39.9042, 116.4074}, // 北京
+            {31.2304, 121.4737}, // 上海
+            {23.1291, 113.2644}, // 广州
+            {22.5431, 114.0579}, // 深圳
+            {30.2741, 120.1551}, // 杭州
+            {32.0603, 118.7969}, // 南京
+            {30.5928, 114.3055}, // 武汉
+            {30.5728, 104.0668}, // 成都
+            {34.3416, 108.9398}, // 西安
+            {29.5630, 106.5516}, // 重庆
+        };
+        
+        // 根据索引循环使用坐标
+        int coordinateIndex = index % cityCoordinates.length;
+        return cityCoordinates[coordinateIndex];
+    }
+    
+    /**
+     * 根据地区名称获取坐标
+     * 
+     * @param regionName 地区名称
+     * @param index 索引（用于同一地区的不同事件）
+     * @return 坐标数组 [纬度, 经度]
+     */
+    private double[] getCoordinatesForRegion(String regionName, int index) {
+        // 根据地区名称返回对应坐标
+        switch (regionName) {
+            case "北京":
+                return new double[]{39.9042 + (index % 3) * 0.01, 116.4074 + (index % 3) * 0.01};
+            case "上海":
+                return new double[]{31.2304 + (index % 3) * 0.01, 121.4737 + (index % 3) * 0.01};
+            case "广州":
+                return new double[]{23.1291 + (index % 3) * 0.01, 113.2644 + (index % 3) * 0.01};
+            case "深圳":
+                return new double[]{22.5431 + (index % 3) * 0.01, 114.0579 + (index % 3) * 0.01};
+            case "杭州":
+                return new double[]{30.2741 + (index % 3) * 0.01, 120.1551 + (index % 3) * 0.01};
+            case "南京":
+                return new double[]{32.0603 + (index % 3) * 0.01, 118.7969 + (index % 3) * 0.01};
+            case "武汉":
+                return new double[]{30.5928 + (index % 3) * 0.01, 114.3055 + (index % 3) * 0.01};
+            case "成都":
+                return new double[]{30.5728 + (index % 3) * 0.01, 104.0668 + (index % 3) * 0.01};
+            case "西安":
+                return new double[]{34.3416 + (index % 3) * 0.01, 108.9398 + (index % 3) * 0.01};
+            case "重庆":
+                return new double[]{29.5630 + (index % 3) * 0.01, 106.5516 + (index % 3) * 0.01};
+            default:
+                // 默认使用北京坐标
+                return new double[]{39.9042 + (index % 3) * 0.01, 116.4074 + (index % 3) * 0.01};
+        }
     }
 }

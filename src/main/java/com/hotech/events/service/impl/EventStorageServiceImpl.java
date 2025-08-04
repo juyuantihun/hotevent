@@ -352,6 +352,11 @@ public class EventStorageServiceImpl implements EventStorageService {
             event.setKeywords(Arrays.asList("测试", "事件", "简单"));
             event.setSources(Arrays.asList("简单测试生成器"));
             
+            // 添加测试坐标
+            double[] coordinates = getTestCoordinates(i);
+            event.setLatitude(coordinates[0]);
+            event.setLongitude(coordinates[1]);
+            
             testEvents.add(event);
         }
         
@@ -652,5 +657,29 @@ public class EventStorageServiceImpl implements EventStorageService {
         long timestamp = System.currentTimeMillis();
         int random = (int) (Math.random() * 1000);
         return String.format("EVT_%d_%03d", timestamp, random);
+    }
+    
+    /**
+     * 获取测试事件的坐标
+     * 
+     * @param index 索引
+     * @return 坐标数组 [纬度, 经度]
+     */
+    private double[] getTestCoordinates(int index) {
+        // 预定义一些测试城市的坐标
+        double[][] testCoordinates = {
+            {39.9042, 116.4074}, // 北京
+            {31.2304, 121.4737}, // 上海
+            {23.1291, 113.2644}, // 广州
+            {22.5431, 114.0579}, // 深圳
+            {30.2741, 120.1551}, // 杭州
+            {32.0603, 118.7969}, // 南京
+            {30.5928, 114.3055}, // 武汉
+            {30.5728, 104.0668}, // 成都
+        };
+        
+        // 根据索引循环使用坐标
+        int coordinateIndex = (index - 1) % testCoordinates.length;
+        return testCoordinates[coordinateIndex];
     }
 }
