@@ -317,23 +317,52 @@ public class DeepSeekServiceImpl implements DeepSeekService {
                 .append(" 至 ").append(endTime.format(DateTimeFormatter.ISO_DATE_TIME)).append("\n\n");
 
         // 添加返回格式说明
-        prompt.append("请返回JSON格式的事件数据，格式如下：\n");
+        prompt.append("=== 输出格式要求 ===\n");
+        prompt.append("请返回JSON格式的事件列表，每个事件必须包含以下字段：\n");
+        prompt.append("- id: 事件唯一标识\n");
+        prompt.append("- title: 事件标题（简洁明了）\n");
+        prompt.append("- description: 事件详细描述\n");
+        prompt.append("- eventTime: 事件发生时间（ISO格式）\n");
+        prompt.append("- location: 事件发生地点（具体地名）\n");
+        prompt.append("- latitude: 事件发生地点的纬度（数值格式，如：39.9042）\n");
+        prompt.append("- longitude: 事件发生地点的经度（数值格式，如：116.4074）\n");
+        prompt.append("- subject: 事件主体（人物、组织等）\n");
+        prompt.append("- object: 事件客体（受影响对象）\n");
+        prompt.append("- eventType: 事件类型（政治、经济、社会、科技等）\n");
+        prompt.append("- keywords: 关键词列表\n");
+        prompt.append("- sources: 信息来源列表\n");
+        prompt.append("- credibilityScore: 可信度评分（0.0-1.0）\n\n");
+        
+        prompt.append("JSON格式示例：\n");
         prompt.append("{\n");
         prompt.append("  \"events\": [\n");
         prompt.append("    {\n");
-        prompt.append("      \"id\": \"事件ID\",\n");
+        prompt.append("      \"id\": \"event_001\",\n");
+        prompt.append("      \"title\": \"事件标题\",\n");
+        prompt.append("      \"description\": \"事件详细描述\",\n");
+        prompt.append("      \"eventTime\": \"2024-01-15T10:30:00Z\",\n");
+        prompt.append("      \"location\": \"北京市\",\n");
+        prompt.append("      \"latitude\": 39.9042,\n");
+        prompt.append("      \"longitude\": 116.4074,\n");
         prompt.append("      \"subject\": \"事件主体\",\n");
         prompt.append("      \"object\": \"事件客体\",\n");
-        prompt.append("      \"type\": \"事件类型\",\n");
-        prompt.append("      \"time\": \"事件时间（ISO格式）\",\n");
-        prompt.append("      \"location\": \"事件地点\",\n");
-        prompt.append("      \"description\": \"事件描述\",\n");
-        prompt.append("      \"keywords\": [\"关键词1\", \"关键词2\"]\n");
+        prompt.append("      \"eventType\": \"政治\",\n");
+        prompt.append("      \"keywords\": [\"关键词1\", \"关键词2\"],\n");
+        prompt.append("      \"sources\": [\"来源1\", \"来源2\"],\n");
+        prompt.append("      \"credibilityScore\": 0.85\n");
         prompt.append("    }\n");
         prompt.append("  ]\n");
         prompt.append("}\n\n");
 
-        prompt.append("请生成20-30个符合条件的事件，确保事件内容真实可信，时间在指定范围内，地点与指定地区相关。");
+        prompt.append("=== 重要要求 ===\n");
+        prompt.append("1. 请生成20-30个符合条件的事件\n");
+        prompt.append("2. 确保事件内容真实可信，时间在指定范围内\n");
+        prompt.append("3. 地点与指定地区相关\n");
+        prompt.append("4. **必须提供准确的经纬度坐标**：每个事件都必须包含latitude和longitude字段\n");
+        prompt.append("5. 经纬度必须是数值格式（如：39.9042），不能是字符串\n");
+        prompt.append("6. 如果无法确定精确坐标，请提供该地区的中心坐标或主要城市坐标\n");
+        prompt.append("7. 返回的JSON必须格式正确，可以直接解析\n\n");
+        prompt.append("请严格按照上述格式返回，不要添加任何额外的文字说明。");
 
         return prompt.toString();
     }

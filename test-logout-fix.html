@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>退出登录功能测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #409eff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+        }
+        .success {
+            color: #67c23a;
+            font-weight: bold;
+        }
+        .warning {
+            color: #e6a23c;
+            font-weight: bold;
+        }
+        .error {
+            color: #f56c6c;
+            font-weight: bold;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>退出登录功能修复测试</h1>
+    
+    <div class="test-section">
+        <h2>问题分析</h2>
+        <p>根据代码分析，退出登录没有跳转到登录页面的问题可能由以下原因造成：</p>
+        <ul>
+            <li><span class="error">路由守卫拦截</span>：路由守卫可能阻止了退出登录后的跳转</li>
+            <li><span class="error">异步操作时序</span>：退出登录和路由跳转的时序问题</li>
+            <li><span class="error">状态清理不完整</span>：本地存储的认证状态没有完全清理</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>修复方案</h2>
+        
+        <div class="step">
+            <h3>1. 修改认证Store的退出登录方法</h3>
+            <p>使用 <code>window.location.href</code> 强制跳转，避免路由守卫干扰：</p>
+            <div class="code-block">
+// 修改前：使用 router.push('/login')
+router.push('/login')
+
+// 修改后：使用强制跳转
+setTimeout(() => {
+    window.location.href = '/login'
+}, 500) // 延迟500ms确保消息显示
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>2. 优化路由守卫逻辑</h3>
+            <p>添加对退出登录场景的特殊处理：</p>
+            <div class="code-block">
+// 如果是退出登录后的跳转，直接允许
+if (to.path === '/login' && from.path !== '/login' && !hasToken) {
+    console.log('检测到退出登录后的跳转，直接允许')
+    next()
+    return
+}
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>3. 修复正则表达式问题</h3>
+            <p>修复路由守卫中白名单检查的正则表达式：</p>
+            <div class="code-block">
+// 修改前：正则表达式不完整
+const regex = new RegExp(`^${pathPattern}`)
+
+// 修改后：添加结束符
+const regex = new RegExp(`^${pathPattern}$`)
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试步骤</h2>
+        <ol>
+            <li>启动前端开发服务器</li>
+            <li>登录系统</li>
+            <li>点击右上角用户头像</li>
+            <li>选择"退出登录"</li>
+            <li>确认退出</li>
+            <li>验证是否正确跳转到登录页面</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>验证要点</h2>
+        <ul>
+            <li><span class="success">✓</span> 退出登录后应该立即跳转到登录页面</li>
+            <li><span class="success">✓</span> 本地存储的认证信息应该被清除</li>
+            <li><span class="success">✓</span> 页面刷新后不应该保持登录状态</li>
+            <li><span class="success">✓</span> 直接访问受保护页面应该重定向到登录页</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>如果问题仍然存在</h2>
+        <p>请检查以下几点：</p>
+        <ul>
+            <li>浏览器控制台是否有JavaScript错误</li>
+            <li>网络请求是否正常（检查开发者工具的Network标签）</li>
+            <li>本地存储是否被正确清除（检查Application标签的Local Storage）</li>
+            <li>路由配置是否正确</li>
+        </ul>
+        
+        <p><span class="warning">备用方案</span>：如果强制跳转仍然不工作，可以尝试：</p>
+        <div class="code-block">
+// 完全重新加载页面
+window.location.reload()
+// 或者
+window.location.replace('/login')
+        </div>
+    </div>
+
+    <script>
+        console.log('退出登录修复测试页面已加载');
+        console.log('请按照测试步骤验证修复效果');
+    </script>
+</body>
+</html>

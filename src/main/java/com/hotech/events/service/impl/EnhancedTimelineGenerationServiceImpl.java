@@ -36,6 +36,9 @@ public class EnhancedTimelineGenerationServiceImpl implements EnhancedTimelineGe
     @Autowired
     private TimelinePerformanceMonitoringService performanceMonitoringService;
     
+    @Autowired(required = false)
+    private com.hotech.events.service.EventGeographicEnhancementService eventGeographicEnhancementService;
+    
     // 异步任务管理
     private final Map<String, AsyncTask> asyncTasks = new ConcurrentHashMap<>();
     private final Map<String, CompletableFuture<List<EventData>>> asyncFutures = new ConcurrentHashMap<>();
@@ -350,6 +353,12 @@ public class EnhancedTimelineGenerationServiceImpl implements EnhancedTimelineGe
             // 这里应该调用实际的时间线生成逻辑
             // 为了演示，我们创建一些模拟数据
             List<EventData> events = createMockTimelineEvents(request);
+            
+            // 增强地理信息（为缺少经纬度的事件补充坐标）
+            if (eventGeographicEnhancementService != null) {
+                events = eventGeographicEnhancementService.enhanceEventDataListGeographicInfo(events);
+                log.debug("已为 {} 个事件进行地理信息增强", events.size());
+            }
             
             // 结束性能监控
             performanceMonitoringService.endSegmentationMonitoring(monitoringSessionId, true, events.size());

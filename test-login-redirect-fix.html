@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录跳转功能测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #409eff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+        }
+        .success {
+            color: #67c23a;
+            font-weight: bold;
+        }
+        .warning {
+            color: #e6a23c;
+            font-weight: bold;
+        }
+        .error {
+            color: #f56c6c;
+            font-weight: bold;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>登录跳转功能修复测试</h1>
+    
+    <div class="test-section">
+        <h2>问题分析</h2>
+        <p>登录成功后不跳转到dashboard的问题原因：</p>
+        <ul>
+            <li><span class="error">路由守卫冲突</span>：登录成功后设置了token，但路由守卫阻止了跳转</li>
+            <li><span class="error">异步时序问题</span>：token设置和路由跳转的时序冲突</li>
+            <li><span class="error">路由拦截</span>：已登录用户访问登录页面被强制重定向</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>修复方案</h2>
+        
+        <div class="step">
+            <h3>1. 修改登录页面跳转逻辑</h3>
+            <p>使用强制跳转替代路由跳转：</p>
+            <div class="code-block">
+// 修改前：使用路由跳转
+await router.push(redirectPath)
+
+// 修改后：使用强制跳转
+setTimeout(() => {
+    window.location.href = redirectPath
+}, 500) // 延迟500ms确保登录成功消息显示
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>2. 修复onMounted中的跳转</h3>
+            <p>如果用户已登录，直接强制跳转：</p>
+            <div class="code-block">
+// 修改前：使用路由跳转
+await router.push(redirectPath).catch(...)
+
+// 修改后：使用强制跳转
+window.location.href = redirectPath
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>3. 保持路由守卫简洁</h3>
+            <p>路由守卫保持原有逻辑，已登录用户访问登录页面时跳转到dashboard：</p>
+            <div class="code-block">
+if (hasToken) {
+    if (to.path === '/login') {
+        // 如果已登录，跳转到首页
+        next({ path: '/dashboard' })
+        NProgress.done()
+    } else {
+        // 正常处理其他页面
+        next()
+    }
+}
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试步骤</h2>
+        <ol>
+            <li><span class="warning">重启开发服务器</span>（重要）</li>
+            <li>清除浏览器缓存和本地存储</li>
+            <li>访问登录页面</li>
+            <li>输入正确的用户名和密码</li>
+            <li>点击登录按钮</li>
+            <li><span class="success">验证是否显示"登录成功"消息</span></li>
+            <li><span class="success">验证是否在500ms后自动跳转到dashboard</span></li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>验证要点</h2>
+        <ul>
+            <li><span class="success">✓</span> 登录成功后应该显示"登录成功"消息</li>
+            <li><span class="success">✓</span> 500ms后应该自动跳转到dashboard页面</li>
+            <li><span class="success">✓</span> dashboard页面应该正常显示用户信息</li>
+            <li><span class="success">✓</span> 页面刷新后应该保持登录状态</li>
+            <li><span class="success">✓</span> 已登录用户直接访问/login应该重定向到dashboard</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>调试信息</h2>
+        <p>如果问题仍然存在，请检查浏览器控制台的以下信息：</p>
+        <ul>
+            <li><span class="warning">登录成功，当前认证状态</span>：检查token和用户信息是否正确设置</li>
+            <li><span class="warning">准备跳转到</span>：检查重定向路径是否正确</li>
+            <li><span class="warning">路由守卫检查</span>：检查路由守卫的执行情况</li>
+        </ul>
+        
+        <p><span class="error">常见问题</span>：</p>
+        <ul>
+            <li>如果看到"登录成功"但没有跳转，可能是JavaScript错误</li>
+            <li>如果跳转到错误页面，检查重定向路径逻辑</li>
+            <li>如果出现无限重定向，检查路由守卫逻辑</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>修复总结</h2>
+        <p>本次修复的核心思路：</p>
+        <ol>
+            <li><span class="success">统一跳转方式</span>：登录和退出都使用强制页面跳转</li>
+            <li><span class="success">避免路由冲突</span>：不依赖Vue Router的编程式导航</li>
+            <li><span class="success">保证用户体验</span>：延迟跳转确保消息能够显示</li>
+            <li><span class="success">简化逻辑</span>：减少路由守卫的复杂判断</li>
+        </ol>
+    </div>
+
+    <script>
+        console.log('登录跳转修复测试页面已加载');
+        console.log('请按照测试步骤验证修复效果');
+        
+        // 检查当前是否在开发环境
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            console.log('检测到开发环境，请确保前端服务器正在运行');
+        }
+    </script>
+</body>
+</html>

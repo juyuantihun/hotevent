@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理信息增强功能测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #409eff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+        }
+        .success {
+            color: #67c23a;
+            font-weight: bold;
+        }
+        .warning {
+            color: #e6a23c;
+            font-weight: bold;
+        }
+        .error {
+            color: #f56c6c;
+            font-weight: bold;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .api-test {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        .coordinate-display {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>地理信息增强功能测试</h1>
+    
+    <div class="test-section">
+        <h2>功能概述</h2>
+        <p>地理信息增强服务专门用于为从火山引擎获取的事件补充缺失的经纬度数据，确保时间线生成功能的完整性。</p>
+        
+        <div class="feature-list">
+            <div class="feature-item">
+                <h4>🌍 智能地点识别</h4>
+                <p>从事件地点字段和描述文本中智能提取地理位置信息</p>
+            </div>
+            <div class="feature-item">
+                <h4>📍 坐标数据库</h4>
+                <p>内置全球主要城市和国家的经纬度坐标数据</p>
+            </div>
+            <div class="feature-item">
+                <h4>🔄 批量处理</h4>
+                <p>支持批量为缺少坐标的事件补充地理信息</p>
+            </div>
+            <div class="feature-item">
+                <h4>📊 统计监控</h4>
+                <p>提供详细的处理统计和成功率监控</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>核心特性</h2>
+        
+        <div class="step">
+            <h3>1. 自动检测缺失坐标</h3>
+            <p>系统会自动检测哪些事件缺少经纬度信息：</p>
+            <div class="code-block">
+// 检测逻辑
+public boolean needsGeographicEnhancement(Event event) {
+    return event.getLatitude() == null || event.getLongitude() == null;
+}
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>2. 智能地点提取</h3>
+            <p>从事件描述中提取地理位置信息：</p>
+            <div class="code-block">
+// 正则表达式匹配
+Pattern locationPattern = Pattern.compile(
+    "(?:在|于|位于|发生在)\\s*([^，,。.\\s]{2,20}?)(?:[，,。.\\s]|$)"
+);
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>3. 坐标数据映射</h3>
+            <p>内置主要城市和国家的坐标数据：</p>
+            <div class="coordinate-display">
+                北京: [39.9042, 116.4074]<br>
+                上海: [31.2304, 121.4737]<br>
+                华盛顿: [38.9072, -77.0369]<br>
+                伦敦: [51.5074, -0.1278]<br>
+                东京: [35.6762, 139.6503]<br>
+                ...
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>4. 集成到时间线生成</h3>
+            <p>在时间线生成过程中自动调用地理信息增强：</p>
+            <div class="code-block">
+// 在EnhancedTimelineGenerationServiceImpl中
+if (eventGeographicEnhancementService != null) {
+    events = eventGeographicEnhancementService
+        .enhanceEventDataListGeographicInfo(events);
+}
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>API接口测试</h2>
+        
+        <div class="api-test">
+            <h4>1. 获取增强统计</h4>
+            <p><strong>GET</strong> /api/geographic-enhancement/statistics</p>
+            <div class="code-block">
+curl -X GET "http://localhost:8080/api/geographic-enhancement/statistics"
+            </div>
+        </div>
+
+        <div class="api-test">
+            <h4>2. 为单个事件增强地理信息</h4>
+            <p><strong>POST</strong> /api/geographic-enhancement/enhance-event/{eventId}</p>
+            <div class="code-block">
+curl -X POST "http://localhost:8080/api/geographic-enhancement/enhance-event/1"
+            </div>
+        </div>
+
+        <div class="api-test">
+            <h4>3. 批量增强缺失的地理信息</h4>
+            <p><strong>POST</strong> /api/geographic-enhancement/enhance-missing?limit=100</p>
+            <div class="code-block">
+curl -X POST "http://localhost:8080/api/geographic-enhancement/enhance-missing?limit=100"
+            </div>
+        </div>
+
+        <div class="api-test">
+            <h4>4. 根据地点名称获取坐标</h4>
+            <p><strong>GET</strong> /api/geographic-enhancement/coordinates?locationName=北京</p>
+            <div class="code-block">
+curl -X GET "http://localhost:8080/api/geographic-enhancement/coordinates?locationName=北京"
+            </div>
+        </div>
+
+        <div class="api-test">
+            <h4>5. 从文本中提取地点信息</h4>
+            <p><strong>POST</strong> /api/geographic-enhancement/extract-location</p>
+            <div class="code-block">
+curl -X POST "http://localhost:8080/api/geographic-enhancement/extract-location" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "事件发生在北京市中心地区"}'
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试步骤</h2>
+        <ol>
+            <li><span class="success">启动后端服务</span>：确保Spring Boot应用正常运行</li>
+            <li><span class="success">检查服务状态</span>：访问统计接口确认服务可用</li>
+            <li><span class="success">测试单个事件增强</span>：选择一个缺少坐标的事件进行测试</li>
+            <li><span class="success">测试批量增强</span>：运行批量增强接口</li>
+            <li><span class="success">验证时间线生成</span>：创建时间线验证地理信息是否正确补充</li>
+            <li><span class="success">检查数据库</span>：确认事件表中的longitude和latitude字段已更新</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>验证要点</h2>
+        <ul>
+            <li><span class="success">✓</span> 缺少经纬度的事件能够自动补充坐标</li>
+            <li><span class="success">✓</span> 地点名称能够正确映射到坐标</li>
+            <li><span class="success">✓</span> 从事件描述中能够提取地点信息</li>
+            <li><span class="success">✓</span> 批量处理功能正常工作</li>
+            <li><span class="success">✓</span> 统计信息准确反映处理结果</li>
+            <li><span class="success">✓</span> 时间线生成包含完整的地理信息</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>数据库验证</h2>
+        <p>检查事件表中的地理信息字段：</p>
+        <div class="code-block">
+-- 查询缺少地理信息的事件
+SELECT id, event_location, latitude, longitude, geographic_status 
+FROM event 
+WHERE latitude IS NULL OR longitude IS NULL;
+
+-- 查询已增强地理信息的事件
+SELECT id, event_location, latitude, longitude, geographic_status, geographic_updated_at
+FROM event 
+WHERE geographic_status = 1 
+ORDER BY geographic_updated_at DESC 
+LIMIT 10;
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>性能监控</h2>
+        <p>监控地理信息增强的性能指标：</p>
+        <ul>
+            <li><span class="warning">处理速度</span>：每秒处理的事件数量</li>
+            <li><span class="warning">成功率</span>：成功获取坐标的事件比例</li>
+            <li><span class="warning">缓存命中率</span>：坐标查询的缓存效率</li>
+            <li><span class="warning">错误率</span>：处理失败的事件比例</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>故障排除</h2>
+        <div class="step">
+            <h3>常见问题</h3>
+            <ul>
+                <li><span class="error">坐标未找到</span>：检查地点名称是否在坐标数据库中</li>
+                <li><span class="error">地点提取失败</span>：检查事件描述的格式是否符合正则表达式</li>
+                <li><span class="error">批量处理缓慢</span>：考虑调整批量处理的数量限制</li>
+                <li><span class="error">数据库更新失败</span>：检查数据库连接和事务配置</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>日志检查</h3>
+            <p>关键日志信息：</p>
+            <div class="code-block">
+# 查看地理信息增强日志
+grep "EventGeographicEnhancementService" logs/application.log
+
+# 查看处理统计
+grep "地理信息增强统计" logs/application.log
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('地理信息增强功能测试页面已加载');
+        console.log('请按照测试步骤验证功能');
+        
+        // 显示当前时间
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('测试开始时间:', new Date().toLocaleString());
+        });
+    </script>
+</body>
+</html>

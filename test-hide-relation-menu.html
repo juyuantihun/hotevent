@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐藏关联关系菜单测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #409eff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+        }
+        .success {
+            color: #67c23a;
+            font-weight: bold;
+        }
+        .warning {
+            color: #e6a23c;
+            font-weight: bold;
+        }
+        .error {
+            color: #f56c6c;
+            font-weight: bold;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .before, .after {
+            flex: 1;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .before {
+            background: #fef0f0;
+            border: 1px solid #fbc4c4;
+        }
+        .after {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+        }
+        .hidden {
+            background: #fef0f0;
+            border: 1px solid #fbc4c4;
+            text-decoration: line-through;
+            color: #999;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .menu-icon {
+            width: 16px;
+            height: 16px;
+            background: #409eff;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>隐藏关联关系菜单测试</h1>
+    
+    <div class="test-section">
+        <h2>修改内容</h2>
+        <p>从左侧导航栏中隐藏"关联关系"菜单项，通过注释的方式保留代码以便将来恢复。</p>
+        
+        <div class="comparison">
+            <div class="before">
+                <h4>修改前</h4>
+                <div class="code-block">
+&lt;el-menu-item index="/relation"&gt;
+  &lt;el-icon&gt;&lt;Share /&gt;&lt;/el-icon&gt;
+  &lt;template #title&gt;关联关系&lt;/template&gt;
+&lt;/el-menu-item&gt;
+                </div>
+            </div>
+            <div class="after">
+                <h4>修改后</h4>
+                <div class="code-block">
+&lt;!-- 关联关系菜单已隐藏 --&gt;
+&lt;!-- &lt;el-menu-item index="/relation"&gt;
+  &lt;el-icon&gt;&lt;Share /&gt;&lt;/el-icon&gt;
+  &lt;template #title&gt;关联关系&lt;/template&gt;
+&lt;/el-menu-item&gt; --&gt;
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>修改详情</h2>
+        
+        <div class="step">
+            <h3>1. 隐藏菜单项</h3>
+            <p>将"关联关系"菜单项用HTML注释包围，使其不在页面中显示：</p>
+            <div class="code-block hidden">
+&lt;el-menu-item index="/relation"&gt;
+  &lt;el-icon&gt;&lt;Share /&gt;&lt;/el-icon&gt;
+  &lt;template #title&gt;关联关系&lt;/template&gt;
+&lt;/el-menu-item&gt;
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>2. 清理未使用的图标导入</h3>
+            <p>从图标导入中移除Share图标：</p>
+            <div class="code-block">
+// 修改前
+import { Monitor, Document, List, Plus, Collection, Connection, Share, EditPen }
+
+// 修改后
+import { Monitor, Document, List, Plus, Collection, Connection, EditPen }
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>3. 保留代码结构</h3>
+            <p>使用注释而不是删除，便于将来恢复功能：</p>
+            <div class="code-block">
+&lt;!-- 关联关系菜单已隐藏 --&gt;
+&lt;!-- 如需恢复，请取消注释以下代码 --&gt;
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>当前菜单结构</h2>
+        <p>隐藏"关联关系"菜单后，左侧导航栏现在包含：</p>
+        
+        <div class="menu-item">
+            <div class="menu-icon"></div>
+            <span>仪表板</span>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-icon"></div>
+            <span>事件管理</span>
+            <div style="margin-left: 20px;">
+                <div class="menu-item">
+                    <div class="menu-icon"></div>
+                    <span>事件列表</span>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-icon"></div>
+                    <span>录入事件</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-icon"></div>
+            <span>时间线管理</span>
+            <div style="margin-left: 20px;">
+                <div class="menu-item">
+                    <div class="menu-icon"></div>
+                    <span>时间线列表</span>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-icon"></div>
+                    <span>事件管理</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item hidden">
+            <div class="menu-icon"></div>
+            <span>关联关系 (已隐藏)</span>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-icon"></div>
+            <span>字典管理</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试步骤</h2>
+        <ol>
+            <li>启动前端开发服务器</li>
+            <li>登录系统</li>
+            <li><span class="success">验证左侧导航栏不再显示"关联关系"菜单项</span></li>
+            <li><span class="success">验证其他菜单项正常显示和工作</span></li>
+            <li><span class="success">验证菜单折叠/展开功能正常</span></li>
+            <li><span class="success">验证浏览器控制台没有JavaScript错误</span></li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>验证要点</h2>
+        <ul>
+            <li><span class="success">✓</span> "关联关系"菜单项不再显示</li>
+            <li><span class="success">✓</span> 其他菜单项正常显示</li>
+            <li><span class="success">✓</span> 菜单布局保持整洁</li>
+            <li><span class="success">✓</span> 没有JavaScript错误或警告</li>
+            <li><span class="success">✓</span> 菜单交互功能正常</li>
+            <li><span class="success">✓</span> 路由导航正常工作</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>路由处理</h2>
+        <p><span class="warning">注意</span>：虽然菜单项已隐藏，但路由配置仍然存在。如果用户直接访问 <code>/relation</code> 路径，页面仍然可以访问。</p>
+        
+        <p>如果需要完全禁用关联关系功能，还需要：</p>
+        <ul>
+            <li>从路由配置中移除或注释相关路由</li>
+            <li>添加路由守卫阻止访问</li>
+            <li>或者在关联关系页面显示"功能暂时不可用"的提示</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>如果需要恢复</h2>
+        <p>如果将来需要重新显示"关联关系"菜单，可以：</p>
+        <div class="code-block">
+// 1. 取消注释菜单项
+&lt;el-menu-item index="/relation"&gt;
+  &lt;el-icon&gt;&lt;Share /&gt;&lt;/el-icon&gt;
+  &lt;template #title&gt;关联关系&lt;/template&gt;
+&lt;/el-menu-item&gt;
+
+// 2. 重新导入Share图标
+import { Monitor, Document, List, Plus, Collection, Connection, Share, EditPen }
+        </div>
+    </div>
+
+    <script>
+        console.log('隐藏关联关系菜单测试页面已加载');
+        console.log('请按照测试步骤验证修改效果');
+    </script>
+</body>
+</html>

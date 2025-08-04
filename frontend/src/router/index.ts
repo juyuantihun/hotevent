@@ -318,6 +318,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
 
   console.log('路由守卫检查:', {
     to: to.path,
+    from: from.path,
     hasToken: !!hasToken,
     hasUserInfo: !!authStore.userInfo
   })
@@ -332,6 +333,13 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     }
     return path === to.path
   })
+
+  // 如果是退出登录后的跳转，直接允许
+  if (to.path === '/login' && from.path !== '/login' && !hasToken) {
+    console.log('检测到退出登录后的跳转，直接允许')
+    next()
+    return
+  }
 
   if (hasToken) {
     if (to.path === '/login') {

@@ -428,22 +428,47 @@ public class PromptTemplateServiceImpl implements PromptTemplateService {
      * 获取事件检索响应格式
      */
     private String getEventFetchResponseFormat() {
-        return "{\n" +
+        return "=== 输出格式要求 ===\n" +
+                "请返回JSON格式的事件列表，每个事件必须包含以下字段：\n" +
+                "- id: 事件唯一标识\n" +
+                "- title: 事件标题（简洁明了）\n" +
+                "- description: 事件详细描述\n" +
+                "- eventTime: 事件发生时间（ISO格式）\n" +
+                "- location: 事件发生地点（具体地名）\n" +
+                "- latitude: 事件发生地点的纬度（数值格式，如：39.9042）\n" +
+                "- longitude: 事件发生地点的经度（数值格式，如：116.4074）\n" +
+                "- subject: 事件主体（人物、组织等）\n" +
+                "- object: 事件客体（受影响对象）\n" +
+                "- eventType: 事件类型（政治、经济、社会、科技等）\n" +
+                "- keywords: 关键词列表\n" +
+                "- sources: 信息来源列表\n" +
+                "- credibilityScore: 可信度评分（0.0-1.0）\n\n" +
+                "JSON格式示例：\n" +
+                "{\n" +
                 "  \"events\": [\n" +
                 "    {\n" +
+                "      \"id\": \"event_001\",\n" +
                 "      \"title\": \"事件标题\",\n" +
-                "      \"description\": \"详细描述\",\n" +
-                "      \"eventTime\": \"2024-01-01T12:00:00\",\n" +
-                "      \"location\": \"具体地点\",\n" +
+                "      \"description\": \"事件详细描述\",\n" +
+                "      \"eventTime\": \"2024-01-15T10:30:00Z\",\n" +
+                "      \"location\": \"北京市\",\n" +
+                "      \"latitude\": 39.9042,\n" +
+                "      \"longitude\": 116.4074,\n" +
                 "      \"subject\": \"事件主体\",\n" +
                 "      \"object\": \"事件客体\",\n" +
-                "      \"eventType\": \"事件类型\",\n" +
+                "      \"eventType\": \"政治\",\n" +
                 "      \"keywords\": [\"关键词1\", \"关键词2\"],\n" +
                 "      \"sources\": [\"来源1\", \"来源2\"],\n" +
-                "      \"credibilityScore\": 0.95\n" +
+                "      \"credibilityScore\": 0.85\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}\n\n" +
+                "=== 重要要求 ===\n" +
+                "1. **必须提供准确的经纬度坐标**：每个事件都必须包含latitude和longitude字段\n" +
+                "2. 经纬度必须是数值格式（如：39.9042），不能是字符串\n" +
+                "3. 如果无法确定精确坐标，请提供该地区的中心坐标或主要城市坐标\n" +
+                "4. 返回的JSON必须格式正确，可以直接解析\n" +
+                "5. 请严格按照上述格式返回，不要添加任何额外的文字说明";
     }
 
     /**

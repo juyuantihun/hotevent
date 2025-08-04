@@ -73,10 +73,11 @@
             </el-menu-item>
           </el-sub-menu>
 
-          <el-menu-item index="/relation">
+          <!-- 关联关系菜单已隐藏 -->
+          <!-- <el-menu-item index="/relation">
             <el-icon><Share /></el-icon>
             <template #title>关联关系</template>
-          </el-menu-item>
+          </el-menu-item> -->
 
           <el-menu-item index="/dictionary">
             <el-icon><Collection /></el-icon>
@@ -101,7 +102,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Monitor, Document, List, Plus, Collection, Connection, Share, EditPen } from '@element-plus/icons-vue'
+import { Monitor, Document, List, Plus, Collection, Connection, EditPen } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/store/modules/auth'
 
 const router = useRouter()

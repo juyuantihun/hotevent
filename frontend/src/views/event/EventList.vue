@@ -109,10 +109,6 @@
           <el-icon><Download /></el-icon>
           导出数据
         </el-button>
-        <el-button type="info" @click="handleDeduplication">
-          <el-icon><Operation /></el-icon>
-          事件去重
-        </el-button>
       </div>
 
       <div class="action-right">
@@ -349,7 +345,6 @@ import {
   User,
   UserFilled,
   Location,
-  Operation,
   Refresh
 } from '@element-plus/icons-vue'
 import EventCardList from './components/EventCardList.vue'
@@ -442,11 +437,7 @@ const handleBatchAdd = () => {
   router.push('/event/batch')
 }
 
-const handleDeduplication = () => {
-  ElMessage.info('事件去重功能开发中...')
-  // TODO: 实现事件去重功能
-  // router.push('/timeline/deduplication')
-}
+
 
 const handleExport = async () => {
   const loadingInstance = ElLoading.service({

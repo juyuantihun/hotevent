@@ -32,7 +32,7 @@
         </el-form-item>
         <el-form-item>
           <el-checkbox v-model="loginData.rememberMe">
-            记住密码
+            记住账号
           </el-checkbox>
         </el-form-item>
         <el-form-item>
@@ -128,11 +128,7 @@ onMounted(async () => {
   
   // 如果已经登录，直接跳转到重定向页面或首页
   if (await authStore.checkSession()) {
-    await router.push(redirectPath).catch(err => {
-      console.error('导航失败:', err)
-      // 如果导航失败，回退到首页
-      router.push('/dashboard')
-    })
+    window.location.href = redirectPath
     return
   }
   
@@ -187,15 +183,10 @@ const handleLogin = async () => {
           
           console.log('准备跳转到:', redirectPath)
           
-          // 登录成功后立即跳转到重定向页面或首页
-          try {
-            await router.push(redirectPath)
-            console.log('路由跳转成功')
-          } catch (err) {
-            console.error('导航失败:', err)
-            // 如果导航失败，回退到首页
-            await router.push('/dashboard')
-          }
+          // 登录成功后使用强制跳转，避免路由守卫干扰
+          setTimeout(() => {
+            window.location.href = redirectPath
+          }, 500) // 延迟500ms确保登录成功消息显示
         }
         // 错误信息已在store中处理和显示，这里不需要额外处理
       } catch (error) {

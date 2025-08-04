@@ -46,6 +46,9 @@ public class EventStorageServiceImpl implements EventStorageService {
     @Autowired(required = false)
     private com.hotech.events.service.EventGeographicIntegrationService eventGeographicIntegrationService;
     
+    @Autowired(required = false)
+    private com.hotech.events.service.EventGeographicEnhancementService eventGeographicEnhancementService;
+    
     // 统计信息
     private final AtomicLong totalStoredEvents = new AtomicLong(0);
     private final AtomicLong newEventsCreated = new AtomicLong(0);
@@ -70,6 +73,11 @@ public class EventStorageServiceImpl implements EventStorageService {
             // 集成地理信息处理
             if (eventGeographicIntegrationService != null) {
                 eventData = eventGeographicIntegrationService.integrateGeographicInfoForSingleEvent(eventData);
+            }
+            
+            // 增强地理信息（为缺少经纬度的事件补充坐标）
+            if (eventGeographicEnhancementService != null) {
+                eventData = eventGeographicEnhancementService.enhanceEventDataGeographicInfo(eventData);
             }
             
             // 检查是否已存在相似事件

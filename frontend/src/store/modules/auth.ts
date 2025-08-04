@@ -454,8 +454,10 @@ export const useAuthStore = defineStore('auth', () => {
       setLoading('logout', false)
       ElMessage.success('已安全退出登录')
       
-      // 重定向到登录页面
-      router.push('/login')
+      // 使用 window.location.href 强制跳转到登录页面，避免路由守卫干扰
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 500) // 延迟500ms确保消息显示
     }
   }
   
