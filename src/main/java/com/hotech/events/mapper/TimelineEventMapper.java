@@ -195,4 +195,63 @@ public interface TimelineEventMapper extends BaseMapper<TimelineEvent> {
             "LEFT JOIN timeline_event te ON t.id = te.timeline_id " +
             "WHERE te.timeline_id IS NULL AND t.event_count > 0")
     List<Map<String, Object>> findTimelinesWithoutEvents();
+    
+    /**
+     * 测试查询：获取所有事件数量
+     * @return 事件总数
+     */
+    @Select("SELECT COUNT(*) FROM event")
+    int countAllEvents();
+    
+    /**
+     * 测试查询：获取指定时间线关联的事件数量
+     * @param timelineId 时间线ID
+     * @return 关联事件数量
+     */
+    @Select("SELECT COUNT(*) FROM timeline_event WHERE timeline_id = #{timelineId}")
+    int countAssociatedEvents(@Param("timelineId") Long timelineId);
+    
+    /**
+     * 分页查询未关联到指定时间线的事件
+     * @param page 分页参数
+     * @param timelineId 时间线ID
+     * @param eventType 事件类型（可选）
+     * @param subject 事件主体（可选）
+     * @param object 事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 未关联事件分页列表
+     */
+    IPage<Map<String, Object>> selectAvailableEvents(
+            Page<Map<String, Object>> page,
+            @Param("timelineId") Long timelineId,
+            @Param("eventType") String eventType,
+            @Param("subject") String subject,
+            @Param("object") String object,
+            @Param("sourceType") Integer sourceType,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
+    
+    /**
+     * 调试查询：获取所有事件（用于测试搜索条件）
+     * @param page 分页参数
+     * @param timelineId 时间线ID
+     * @param eventType 事件类型（可选）
+     * @param subject 事件主体（可选）
+     * @param object 事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 所有事件分页列表（包含关联状态）
+     */
+    IPage<Map<String, Object>> selectAllEventsForDebug(
+            Page<Map<String, Object>> page,
+            @Param("timelineId") Long timelineId,
+            @Param("eventType") String eventType,
+            @Param("subject") String subject,
+            @Param("object") String object,
+            @Param("sourceType") Integer sourceType,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
 }

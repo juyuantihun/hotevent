@@ -164,4 +164,49 @@ public interface TimelineService {
      * @return 是否更新成功
      */
     boolean updateById(Timeline timeline);
+    
+    /**
+     * 获取未关联到指定时间线的事件
+     * @param timelineId 时间线ID
+     * @param page 分页参数
+     * @param eventType 事件类型（可选）
+     * @param subject 事件主体（可选）
+     * @param object 事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 未关联事件分页列表
+     */
+    IPage<Map<String, Object>> getAvailableEvents(Long timelineId, Page<Map<String, Object>> page,
+            String eventType, String subject, String object, Integer sourceType, 
+            LocalDateTime startTime, LocalDateTime endTime);
+    
+    /**
+     * 获取所有事件数量（调试用）
+     * @return 事件总数
+     */
+    int countAllEvents();
+    
+    /**
+     * 获取指定时间线关联的事件数量（调试用）
+     * @param timelineId 时间线ID
+     * @return 关联事件数量
+     */
+    int countAssociatedEvents(Long timelineId);
+    
+    /**
+     * 调试方法：获取所有事件（包含关联状态）
+     * @param timelineId 时间线ID
+     * @param page 分页参数
+     * @param eventType 事件类型（可选）
+     * @param subject 事件主体（可选）
+     * @param object 事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime 开始时间（可选）
+     * @param endTime 结束时间（可选）
+     * @return 所有事件分页列表（包含关联状态）
+     */
+    IPage<Map<String, Object>> debugAllEvents(Long timelineId, Page<Map<String, Object>> page,
+            String eventType, String subject, String object, Integer sourceType, 
+            LocalDateTime startTime, LocalDateTime endTime);
 }

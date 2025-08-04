@@ -730,4 +730,98 @@ public class TimelineServiceImpl implements TimelineService {
         int result = timelineMapper.updateById(timeline);
         return result > 0;
     }
+    
+    @Override
+    public IPage<Map<String, Object>> getAvailableEvents(Long timelineId, Page<Map<String, Object>> page,
+            String eventType, String subject, String object, Integer sourceType, 
+            LocalDateTime startTime, LocalDateTime endTime) {
+        
+        log.info("获取未关联到时间线的事件: timelineId={}, page={}, size={}, eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                timelineId, page.getCurrent(), page.getSize(), eventType, subject, object, sourceType, startTime, endTime);
+        
+        // 添加详细的参数调试信息
+        log.info("Service层参数调试: eventType=[{}], subject=[{}], object=[{}], sourceType=[{}], startTime=[{}], endTime=[{}]",
+                eventType, subject, object, sourceType, startTime, endTime);
+        log.info("Service层参数是否为空: eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                eventType == null || eventType.trim().isEmpty(),
+                subject == null || subject.trim().isEmpty(),
+                object == null || object.trim().isEmpty(),
+                sourceType == null,
+                startTime == null,
+                endTime == null);
+        
+        try {
+            // 先检查时间线是否存在
+            Timeline timeline = timelineMapper.selectById(timelineId);
+            if (timeline == null) {
+                log.warn("时间线不存在: timelineId={}", timelineId);
+                throw new RuntimeException("时间线不存在: " + timelineId);
+            }
+            
+            // 添加调试信息
+            int totalEvents = timelineEventMapper.countAllEvents();
+            int associatedEvents = timelineEventMapper.countAssociatedEvents(timelineId);
+            log.info("调试信息 - 总事件数: {}, 已关联事件数: {}, 预期未关联事件数: {}", 
+                    totalEvents, associatedEvents, totalEvents - associatedEvents);
+            
+            // 调用mapper方法获取未关联的事件
+            IPage<Map<String, Object>> result = timelineEventMapper.selectAvailableEvents(
+                    page, timelineId, eventType, subject, object, sourceType, startTime, endTime);
+            
+            log.info("获取未关联到时间线的事件成功: timelineId={}, total={}, records={}", 
+                    timelineId, result.getTotal(), result.getRecords().size());
+            
+            // 打印前几条记录用于调试
+            if (result.getRecords().size() > 0) {
+                log.debug("第一条记录: {}", result.getRecords().get(0));
+            } else {
+                log.warn("没有找到未关联的事件，可能的原因：1.所有事件都已关联 2.SQL查询有问题 3.数据库连接问题");
+            }
+            
+            return result;
+        } catch (Exception e) {
+            log.error("获取未关联到时间线的事件失败: timelineId={}", timelineId, e);
+            throw new RuntimeException("获取未关联到时间线的事件失败", e);
+        }
+    }
+    
+    @Override
+    public int countAllEvents() {
+        return timelineEventMapper.countAllEvents();
+    }
+    
+    @Override
+    public int countAssociatedEvents(Long timelineId) {
+        return timelineEventMapper.countAssociatedEvents(timelineId);
+    }
+    
+    @Override
+    public IPage<Map<String, Object>> debugAllEvents(Long timelineId, Page<Map<String, Object>> page,
+            String eventType, String subject, String object, Integer sourceType, 
+            LocalDateTime startTime, LocalDateTime endTime) {
+        
+        log.info("调试获取所有事件: timelineId={}, page={}, size={}, eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                timelineId, page.getCurrent(), page.getSize(), eventType, subject, object, sourceType, startTime, endTime);
+        
+        try {
+            // 先检查时间线是否存在
+            Timeline timeline = timelineMapper.selectById(timelineId);
+            if (timeline == null) {
+                log.warn("时间线不存在: timelineId={}", timelineId);
+                throw new RuntimeException("时间线不存在: " + timelineId);
+            }
+            
+            // 调用mapper方法获取所有事件（包含关联状态）
+            IPage<Map<String, Object>> result = timelineEventMapper.selectAllEventsForDebug(
+                    page, timelineId, eventType, subject, object, sourceType, startTime, endTime);
+            
+            log.info("调试获取所有事件成功: timelineId={}, total={}, records={}", 
+                    timelineId, result.getTotal(), result.getRecords().size());
+            
+            return result;
+        } catch (Exception e) {
+            log.error("调试获取所有事件失败: timelineId={}", timelineId, e);
+            throw new RuntimeException("调试获取所有事件失败: " + e.getMessage(), e);
+        }
+    }
 }

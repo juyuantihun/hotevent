@@ -133,7 +133,7 @@ public class EventServiceImpl implements EventService {
         eventMapper.insert(event);
 
         // 保存关键词
-        saveEventKeywords(event.getId(), eventDTO.getKeyword());
+        saveEventKeywords(event.getId(), eventDTO.getKeywords());
 
         log.info("创建事件完成，事件ID：{}", event.getId());
         return convertToDTO(event);
@@ -223,7 +223,7 @@ public class EventServiceImpl implements EventService {
 
         // 更新关键词
         deleteEventKeywords(event.getId());
-        saveEventKeywords(event.getId(), eventDTO.getKeyword());
+        saveEventKeywords(event.getId(), eventDTO.getKeywords());
 
         log.info("更新事件完成，事件ID：{}", event.getId());
         return convertToDTO(event);

@@ -15,8 +15,8 @@
         <el-button :icon="'Refresh'" @click="refreshPage" circle size="small" />
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <el-avatar :size="32" :icon="'User'" />
-            <span class="username">管理员</span>
+            <el-avatar :size="32" :src="authStore.userAvatar" :icon="'User'" />
+            <span class="username">{{ authStore.displayName || '用户' }}</span>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
@@ -67,6 +67,10 @@
               <el-icon><List /></el-icon>
               <template #title>时间线列表</template>
             </el-menu-item>
+            <el-menu-item index="/timeline/event-management">
+              <el-icon><EditPen /></el-icon>
+              <template #title>事件管理</template>
+            </el-menu-item>
           </el-sub-menu>
 
           <el-menu-item index="/relation">
@@ -96,11 +100,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { Monitor, Document, List, Plus, Collection, Connection, Share } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Monitor, Document, List, Plus, Collection, Connection, Share, EditPen } from '@element-plus/icons-vue'
+import { useAuthStore } from '@/store/modules/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
 // 响应式数据
 const isCollapse = ref(false)
@@ -123,14 +129,33 @@ const refreshPage = () => {
   location.reload()
 }
 
-const handleCommand = (command: string) => {
+const handleCommand = async (command: string) => {
   switch (command) {
     case 'profile':
       ElMessage.info('个人中心功能开发中...')
       break
     case 'logout':
-      ElMessage.success('退出登录成功')
-      router.push('/login')
+      try {
+        await ElMessageBox.confirm(
+          '确定要退出登录吗？',
+          '退出确认',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+        
+        // 调用认证store的退出登录方法
+        await authStore.logoutAction()
+        // logoutAction 方法内部已经处理了跳转到登录页面
+      } catch (error) {
+        // 用户取消退出或退出失败
+        if (error !== 'cancel') {
+          console.error('退出登录失败:', error)
+          ElMessage.error('退出登录失败，请重试')
+        }
+      }
       break
   }
 }

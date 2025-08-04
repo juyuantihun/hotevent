@@ -144,13 +144,13 @@ export const useDictionaryStore = defineStore('dictionary', () => {
   /**
    * 通用字典获取方法
    * @param type 字典类型
-   * @param apiType API类型参数
+   * @param dictType 字典类型参数
    * @param forceRefresh 是否强制刷新
    * @returns 字典数据
    */
   async function fetchDictionary(
     type: DictionaryType, 
-    apiType: string, 
+    dictType: string, 
     forceRefresh = false
   ): Promise<Dictionary[]> {
     // 如果数据已存在且不需要刷新，则直接返回
@@ -160,15 +160,14 @@ export const useDictionaryStore = defineStore('dictionary', () => {
     
     setLoading(type, true)
     try {
-      const response = await getDictionaryByType(apiType)
+      const response = await getDictionaryByType(dictType)
       const data = response as unknown as Dictionary[]
       state[type] = data || []
       updateLastUpdated(type)
       return state[type]
     } catch (error) {
-      console.error(`获取${apiType}失败:`, error)
-      const errorMessage = error instanceof Error ? error.message : `获取${apiType}失败`
-      ElMessage.error(`获取${apiType}失败`)
+      console.error(`获取${dictType}字典失败:`, error)
+      ElMessage.error(`获取${dictType}字典失败`)
       return []
     } finally {
       setLoading(type, false)

@@ -86,22 +86,54 @@ public class TimelineController {
      * @return 时间线详情
      */
     @GetMapping("/{id}")
-    @Operation(summary = " ", description = "获取指定时间线的详细信息")
+    @Operation(summary = "获取时间线详情", description = "获取指定时间线的详细信息")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getTimelineDetail(
             @Parameter(description = "时间线ID", required = true) @PathVariable Long id) {
 
         log.info("获取时间线详情: id={}", id);
 
         try {
-            // 调用服务获取时间线详情
-            Map<String, Object> detail = timelineService.getTimelineDetail(id);
+            // 直接从数据库查询时间线详情
+            Timeline timeline = timelineService.getById(id);
 
-            if (detail == null) {
+            if (timeline == null) {
                 log.warn("时间线 {} 不存在", id);
                 return ResponseEntity.ok(ApiResponse.error("时间线不存在"));
             }
 
-            log.info("获取时间线详情成功: id={}", id);
+            // 构建详情响应
+            Map<String, Object> detail = new HashMap<>();
+            detail.put("id", timeline.getId());
+            detail.put("name", timeline.getName());
+            detail.put("description", timeline.getDescription());
+            detail.put("status", timeline.getStatus());
+            detail.put("start_time", timeline.getStartTime());
+            detail.put("end_time", timeline.getEndTime());
+            detail.put("created_at", timeline.getCreatedAt());
+            detail.put("updated_at", timeline.getUpdatedAt());
+
+            // 查询事件数量
+            try {
+                List<Map<String, Object>> events = timelineService.getTimelineEvents(id);
+                detail.put("event_count", events != null ? events.size() : 0);
+            } catch (Exception e) {
+                log.warn("获取时间线事件数量失败: {}", e.getMessage());
+                detail.put("event_count", 0);
+            }
+
+            // 查询关系数量（暂时设为0，如果有相关表可以查询）
+            detail.put("relation_count", 0);
+
+            // 查询涉及地区
+            try {
+                List<Map<String, Object>> regions = timelineService.getTimelineRegions(id);
+                detail.put("regions", regions != null ? regions : new ArrayList<>());
+            } catch (Exception e) {
+                log.warn("获取时间线地区失败: {}", e.getMessage());
+                detail.put("regions", new ArrayList<>());
+            }
+
+            log.info("获取时间线详情成功: id={}, name={}", id, timeline.getName());
             return ResponseEntity.ok(ApiResponse.success(detail));
         } catch (Exception e) {
             log.error("获取时间线详情失败", e);
@@ -113,7 +145,7 @@ public class TimelineController {
      * 从时间线中移除事件
      * 
      * @param timelineId 时间线ID
-     * @param eventId 事件ID
+     * @param eventId    事件ID
      * @return 移除结果
      */
     @DeleteMapping("/{timelineId}/events/{eventId}")
@@ -195,14 +227,14 @@ public class TimelineController {
     /**
      * 获取时间线包含的事件（支持分页和搜索）
      * 
-     * @param id 时间线ID
-     * @param page 页码（可选，默认为1）
-     * @param pageSize 每页大小（可选，默认为50）
+     * @param id             时间线ID
+     * @param page           页码（可选，默认为1）
+     * @param pageSize       每页大小（可选，默认为50）
      * @param includeDetails 是否包含详细信息（可选，默认为false）
-     * @param keyword 搜索关键词（可选）
-     * @param nodeType 事件类型（可选）
-     * @param sortBy 排序字段（可选，默认为eventTime）
-     * @param sortOrder 排序方向（可选，默认为asc）
+     * @param keyword        搜索关键词（可选）
+     * @param nodeType       事件类型（可选）
+     * @param sortBy         排序字段（可选，默认为eventTime）
+     * @param sortOrder      排序方向（可选，默认为asc）
      * @return 事件列表
      */
     @GetMapping("/{id}/events")
@@ -217,16 +249,17 @@ public class TimelineController {
             @Parameter(description = "排序字段", required = false) @RequestParam(defaultValue = "eventTime") String sortBy,
             @Parameter(description = "排序方向", required = false) @RequestParam(defaultValue = "asc") String sortOrder) {
 
-        log.info("获取时间线包含的事件: id={}, page={}, pageSize={}, includeDetails={}, keyword={}, nodeType={}, sortBy={}, sortOrder={}", 
+        log.info(
+                "获取时间线包含的事件: id={}, page={}, pageSize={}, includeDetails={}, keyword={}, nodeType={}, sortBy={}, sortOrder={}",
                 id, page, pageSize, includeDetails, keyword, nodeType, sortBy, sortOrder);
 
         try {
             // 创建分页参数
             Page<Map<String, Object>> pageParam = new Page<>(page, pageSize);
-            
+
             // 调用服务获取时间线包含的事件（分页和搜索）
             IPage<Map<String, Object>> eventsPage = timelineService.getTimelineEventsWithPagination(
-                id, pageParam, includeDetails, keyword, nodeType, sortBy, sortOrder);
+                    id, pageParam, includeDetails, keyword, nodeType, sortBy, sortOrder);
 
             // 构建响应数据
             Map<String, Object> result = new HashMap<>();
@@ -238,7 +271,7 @@ public class TimelineController {
             result.put("hasNext", eventsPage.getCurrent() < eventsPage.getPages());
             result.put("hasPrevious", eventsPage.getCurrent() > 1);
 
-            log.info("获取时间线包含的事件成功: id={}, total={}, currentPage={}, totalPages={}", 
+            log.info("获取时间线包含的事件成功: id={}, total={}, currentPage={}, totalPages={}",
                     id, eventsPage.getTotal(), eventsPage.getCurrent(), eventsPage.getPages());
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
@@ -556,10 +589,10 @@ public class TimelineController {
     }
 
     /**
-     * 添加事件到时间线
+     * 添加事件到时间线（路径参数方式）
      * 
      * @param timelineId 时间线ID
-     * @param eventId 事件ID
+     * @param eventId    事件ID
      * @return 添加结果
      */
     @PostMapping("/{timelineId}/events/{eventId}")
@@ -584,6 +617,327 @@ public class TimelineController {
             return ResponseEntity.ok(ApiResponse.success(response));
         } catch (Exception e) {
             log.error("添加事件到时间线失败: timelineId={}, eventId={}", timelineId, eventId, e);
+            return ResponseEntity.ok(ApiResponse.error("添加事件到时间线失败: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取未关联到指定时间线的事件
+     * 
+     * @param timelineId 时间线ID
+     * @param page       页码
+     * @param size       每页大小
+     * @param eventType  事件类型（可选）
+     * @param subject    事件主体（可选）
+     * @param object     事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime  开始时间（可选）
+     * @param endTime    结束时间（可选）
+     * @return 未关联事件列表
+     */
+    @GetMapping("/{timelineId}/available-events")
+    @Operation(summary = "获取未关联到指定时间线的事件", description = "获取所有未关联到指定时间线的事件，支持分页和筛选")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAvailableEvents(
+            @Parameter(description = "时间线ID", required = true) @PathVariable Long timelineId,
+            @Parameter(description = "页码", required = false) @RequestParam(defaultValue = "1") Integer page,
+            @Parameter(description = "每页大小", required = false) @RequestParam(defaultValue = "20") Integer size,
+            @Parameter(description = "事件类型", required = false) @RequestParam(required = false) String eventType,
+            @Parameter(description = "事件主体", required = false) @RequestParam(required = false) String subject,
+            @Parameter(description = "事件客体", required = false) @RequestParam(required = false) String object,
+            @Parameter(description = "来源类型", required = false) @RequestParam(required = false) Integer sourceType,
+            @Parameter(description = "开始时间", required = false) @RequestParam(required = false) String startTime,
+            @Parameter(description = "结束时间", required = false) @RequestParam(required = false) String endTime) {
+
+        log.info(
+                "获取未关联到时间线的事件: timelineId={}, page={}, size={}, eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                timelineId, page, size, eventType, subject, object, sourceType, startTime, endTime);
+        
+        // 添加详细的参数调试信息
+        log.info("详细参数调试: eventType=[{}], subject=[{}], object=[{}], sourceType=[{}], startTime=[{}], endTime=[{}]",
+                eventType, subject, object, sourceType, startTime, endTime);
+        log.info("参数是否为空: eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                eventType == null || eventType.trim().isEmpty(),
+                subject == null || subject.trim().isEmpty(),
+                object == null || object.trim().isEmpty(),
+                sourceType == null,
+                startTime == null || startTime.trim().isEmpty(),
+                endTime == null || endTime.trim().isEmpty());
+
+        try {
+            // 解析时间参数
+            LocalDateTime startDateTime = null;
+            LocalDateTime endDateTime = null;
+
+            if (startTime != null && !startTime.trim().isEmpty()) {
+                try {
+                    startDateTime = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e) {
+                    log.warn("无法解析开始时间: {}", startTime);
+                }
+            }
+
+            if (endTime != null && !endTime.trim().isEmpty()) {
+                try {
+                    endDateTime = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e) {
+                    log.warn("无法解析结束时间: {}", endTime);
+                }
+            }
+
+            // 创建分页参数
+            Page<Map<String, Object>> pageParam = new Page<>(page, size);
+
+            // 调用服务获取未关联的事件
+            IPage<Map<String, Object>> eventsPage = timelineService.getAvailableEvents(
+                    timelineId, pageParam, eventType, subject, object, sourceType, startDateTime, endDateTime);
+
+            // 构建响应数据
+            Map<String, Object> result = new HashMap<>();
+            result.put("records", eventsPage.getRecords());
+            result.put("list", eventsPage.getRecords()); // 兼容不同的前端命名
+            result.put("total", eventsPage.getTotal());
+            result.put("totalPages", eventsPage.getPages());
+            result.put("currentPage", eventsPage.getCurrent());
+            result.put("pageSize", eventsPage.getSize());
+            result.put("hasNext", eventsPage.getCurrent() < eventsPage.getPages());
+            result.put("hasPrevious", eventsPage.getCurrent() > 1);
+
+            log.info("获取未关联到时间线的事件成功: timelineId={}, total={}, currentPage={}, totalPages={}",
+                    timelineId, eventsPage.getTotal(), eventsPage.getCurrent(), eventsPage.getPages());
+            return ResponseEntity.ok(ApiResponse.success(result));
+        } catch (Exception e) {
+            log.error("获取未关联到时间线的事件失败", e);
+            return ResponseEntity.ok(ApiResponse.error("获取未关联到时间线的事件失败: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 调试API：测试搜索条件
+     * 
+     * @param timelineId 时间线ID
+     * @param page       页码
+     * @param size       每页大小
+     * @param eventType  事件类型（可选）
+     * @param subject    事件主体（可选）
+     * @param object     事件客体（可选）
+     * @param sourceType 来源类型（可选）
+     * @param startTime  开始时间（可选）
+     * @param endTime    结束时间（可选）
+     * @return 调试信息
+     */
+    @GetMapping("/{timelineId}/debug-events")
+    @Operation(summary = "调试API：测试搜索条件", description = "用于调试搜索条件是否生效")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> debugEvents(
+            @Parameter(description = "时间线ID", required = true) @PathVariable Long timelineId,
+            @Parameter(description = "页码", required = false) @RequestParam(defaultValue = "1") Integer page,
+            @Parameter(description = "每页大小", required = false) @RequestParam(defaultValue = "20") Integer size,
+            @Parameter(description = "事件类型", required = false) @RequestParam(required = false) String eventType,
+            @Parameter(description = "事件主体", required = false) @RequestParam(required = false) String subject,
+            @Parameter(description = "事件客体", required = false) @RequestParam(required = false) String object,
+            @Parameter(description = "来源类型", required = false) @RequestParam(required = false) Integer sourceType,
+            @Parameter(description = "开始时间", required = false) @RequestParam(required = false) String startTime,
+            @Parameter(description = "结束时间", required = false) @RequestParam(required = false) String endTime) {
+
+        log.info(
+                "调试搜索条件: timelineId={}, page={}, size={}, eventType={}, subject={}, object={}, sourceType={}, startTime={}, endTime={}",
+                timelineId, page, size, eventType, subject, object, sourceType, startTime, endTime);
+
+        try {
+            // 解析时间参数
+            LocalDateTime startDateTime = null;
+            LocalDateTime endDateTime = null;
+
+            if (startTime != null && !startTime.trim().isEmpty()) {
+                try {
+                    startDateTime = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e) {
+                    log.warn("无法解析开始时间: {}", startTime);
+                }
+            }
+
+            if (endTime != null && !endTime.trim().isEmpty()) {
+                try {
+                    endDateTime = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e) {
+                    log.warn("无法解析结束时间: {}", endTime);
+                }
+            }
+
+            // 创建分页参数
+            Page<Map<String, Object>> pageParam = new Page<>(page, size);
+
+            // 调用调试方法获取所有事件（包含关联状态）
+            IPage<Map<String, Object>> allEventsPage = timelineService.debugAllEvents(
+                    timelineId, pageParam, eventType, subject, object, sourceType, startDateTime, endDateTime);
+
+            // 调用正常方法获取未关联事件
+            IPage<Map<String, Object>> availableEventsPage = timelineService.getAvailableEvents(
+                    timelineId, pageParam, eventType, subject, object, sourceType, startDateTime, endDateTime);
+
+            // 构建调试响应数据
+            Map<String, Object> result = new HashMap<>();
+            result.put("searchParams", Map.of(
+                    "timelineId", timelineId,
+                    "eventType", eventType,
+                    "subject", subject,
+                    "object", object,
+                    "sourceType", sourceType,
+                    "startTime", startTime,
+                    "endTime", endTime
+            ));
+            result.put("allEvents", Map.of(
+                    "total", allEventsPage.getTotal(),
+                    "records", allEventsPage.getRecords()
+            ));
+            result.put("availableEvents", Map.of(
+                    "total", availableEventsPage.getTotal(),
+                    "records", availableEventsPage.getRecords()
+            ));
+
+            log.info("调试搜索条件成功: timelineId={}, allEventsTotal={}, availableEventsTotal={}",
+                    timelineId, allEventsPage.getTotal(), availableEventsPage.getTotal());
+            return ResponseEntity.ok(ApiResponse.success(result));
+        } catch (Exception e) {
+            log.error("调试搜索条件失败", e);
+            return ResponseEntity.ok(ApiResponse.error("调试搜索条件失败: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 调试接口：获取事件统计信息
+     * 
+     * @param timelineId 时间线ID
+     * @return 统计信息
+     */
+    @GetMapping("/{timelineId}/debug/event-stats")
+    @Operation(summary = "调试接口：获取事件统计信息", description = "用于调试的事件统计信息")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getEventStats(
+            @Parameter(description = "时间线ID", required = true) @PathVariable Long timelineId) {
+
+        log.info("获取事件统计信息: timelineId={}", timelineId);
+
+        try {
+            Map<String, Object> stats = new HashMap<>();
+
+            // 获取总事件数
+            int totalEvents = timelineService.countAllEvents();
+            stats.put("totalEvents", totalEvents);
+
+            // 获取已关联事件数
+            int associatedEvents = timelineService.countAssociatedEvents(timelineId);
+            stats.put("associatedEvents", associatedEvents);
+
+            // 计算未关联事件数
+            stats.put("availableEvents", totalEvents - associatedEvents);
+
+            log.info("事件统计信息: {}", stats);
+            return ResponseEntity.ok(ApiResponse.success(stats));
+        } catch (Exception e) {
+            log.error("获取事件统计信息失败", e);
+            return ResponseEntity.ok(ApiResponse.error("获取事件统计信息失败: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 添加事件到时间线（请求体方式）
+     * 
+     * @param timelineId  时间线ID
+     * @param requestBody 请求体，包含eventId或eventIds
+     * @return 添加结果
+     */
+    @PostMapping("/{timelineId}/events")
+    @Operation(summary = "添加事件到时间线", description = "将指定事件添加到时间线中，支持单个或批量添加")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> addEventsToTimeline(
+            @Parameter(description = "时间线ID", required = true) @PathVariable Long timelineId,
+            @RequestBody Map<String, Object> requestBody) {
+
+        log.info("添加事件到时间线: timelineId={}, requestBody={}", timelineId, requestBody);
+
+        try {
+            Map<String, Object> response = new HashMap<>();
+            response.put("timelineId", timelineId);
+
+            // 处理单个事件ID
+            if (requestBody.containsKey("eventId")) {
+                Object eventIdObj = requestBody.get("eventId");
+                Long eventId = null;
+
+                if (eventIdObj instanceof Number) {
+                    eventId = ((Number) eventIdObj).longValue();
+                } else if (eventIdObj instanceof String) {
+                    try {
+                        eventId = Long.parseLong((String) eventIdObj);
+                    } catch (NumberFormatException e) {
+                        log.warn("无法解析事件ID: {}", eventIdObj);
+                        return ResponseEntity.ok(ApiResponse.error("无效的事件ID格式"));
+                    }
+                }
+
+                if (eventId != null) {
+                    boolean result = timelineService.addEventToTimeline(timelineId, eventId);
+                    response.put("success", result);
+                    response.put("eventId", eventId);
+                    response.put("message", result ? "事件已成功添加到时间线" : "添加事件到时间线失败");
+
+                    log.info("添加单个事件到时间线结果: timelineId={}, eventId={}, result={}", timelineId, eventId, result);
+                    return ResponseEntity.ok(ApiResponse.success(response));
+                }
+            }
+
+            // 处理批量事件ID
+            if (requestBody.containsKey("eventIds") && requestBody.get("eventIds") instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> eventIdObjects = (List<Object>) requestBody.get("eventIds");
+                List<Long> eventIds = new ArrayList<>();
+
+                for (Object eventIdObj : eventIdObjects) {
+                    if (eventIdObj instanceof Number) {
+                        eventIds.add(((Number) eventIdObj).longValue());
+                    } else if (eventIdObj instanceof String) {
+                        try {
+                            eventIds.add(Long.parseLong((String) eventIdObj));
+                        } catch (NumberFormatException e) {
+                            log.warn("无法解析事件ID: {}", eventIdObj);
+                        }
+                    }
+                }
+
+                if (!eventIds.isEmpty()) {
+                    int successCount = 0;
+                    List<Long> failedEventIds = new ArrayList<>();
+
+                    for (Long eventId : eventIds) {
+                        try {
+                            boolean result = timelineService.addEventToTimeline(timelineId, eventId);
+                            if (result) {
+                                successCount++;
+                            } else {
+                                failedEventIds.add(eventId);
+                            }
+                        } catch (Exception e) {
+                            log.error("添加事件到时间线失败: timelineId={}, eventId={}", timelineId, eventId, e);
+                            failedEventIds.add(eventId);
+                        }
+                    }
+
+                    response.put("success", successCount > 0);
+                    response.put("eventIds", eventIds);
+                    response.put("successCount", successCount);
+                    response.put("totalCount", eventIds.size());
+                    response.put("failedEventIds", failedEventIds);
+                    response.put("message", String.format("成功添加 %d/%d 个事件到时间线", successCount, eventIds.size()));
+
+                    log.info("批量添加事件到时间线结果: timelineId={}, successCount={}, totalCount={}",
+                            timelineId, successCount, eventIds.size());
+                    return ResponseEntity.ok(ApiResponse.success(response));
+                }
+            }
+
+            // 如果没有找到有效的事件ID
+            return ResponseEntity.ok(ApiResponse.error("请求体中缺少有效的事件ID"));
+
+        } catch (Exception e) {
+            log.error("添加事件到时间线失败: timelineId={}", timelineId, e);
             return ResponseEntity.ok(ApiResponse.error("添加事件到时间线失败: " + e.getMessage()));
         }
     }
@@ -675,6 +1029,33 @@ public class TimelineController {
         } catch (Exception e) {
             log.error("创建时间线失败", e);
             return ResponseEntity.ok(ApiResponse.error("创建时间线失败: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * 测试API：检查数据库中的事件数据
+     * 
+     * @return 数据库统计信息
+     */
+    @GetMapping("/debug/database-stats")
+    @Operation(summary = "测试API：检查数据库中的事件数据", description = "用于检查数据库中的事件数据统计")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDatabaseStats() {
+        log.info("获取数据库统计信息");
+
+        try {
+            // 获取基本统计信息
+            int totalEvents = timelineService.countAllEvents();
+            
+            // 构建响应数据
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalEvents", totalEvents);
+            result.put("message", "数据库统计信息获取成功");
+
+            log.info("数据库统计信息: totalEvents={}", totalEvents);
+            return ResponseEntity.ok(ApiResponse.success(result));
+        } catch (Exception e) {
+            log.error("获取数据库统计信息失败", e);
+            return ResponseEntity.ok(ApiResponse.error("获取数据库统计信息失败: " + e.getMessage()));
         }
     }
 }

@@ -1,5 +1,25 @@
 ﻿<template>
   <div class="timeline-detail-view" v-loading="loading">
+    <!-- 手动添加事件对话框 -->
+    <!-- <el-dialog v-model="showAddEventDialog" title="添加事件到时间线" width="800px" :close-on-click-modal="false">
+      <AddEventForm 
+        v-if="showAddEventDialog" 
+        :timeline-id="currentTimeline?.id"
+        @success="handleAddEventSuccess"
+        @cancel="showAddEventDialog = false"
+      />
+    </el-dialog> -->
+
+    <!-- 选择已有事件对话框 -->
+    <!-- <el-dialog v-model="showSelectEventDialog" title="选择已有事件" width="1000px" :close-on-click-modal="false">
+      <SelectEventList 
+        v-if="showSelectEventDialog"
+        :timeline-id="currentTimeline?.id"
+        @success="handleSelectEventSuccess"
+        @cancel="showSelectEventDialog = false"
+      />
+    </el-dialog> -->
+
     <!-- 高级导出对话框 -->
     <el-dialog v-model="showExportDialog" title="高级导出选项" width="500px" :close-on-click-modal="false">
       <el-form :model="exportOptions" label-width="120px">
@@ -107,23 +127,7 @@
           </el-button>
         </el-button-group>
 
-        <el-dropdown trigger="click">
-          <el-button type="success" size="small">
-            <el-icon>
-              <Download />
-            </el-icon>
-            导出
-            <el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="exportTimeline('json')">导出为JSON</el-dropdown-item>
-              <el-dropdown-item @click="exportTimeline('csv')">导出为CSV</el-dropdown-item>
-              <el-dropdown-item @click="exportTimeline('pdf')">导出为PDF</el-dropdown-item>
-              <el-dropdown-item divided @click="showExportDialog = true">高级导出选项</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <!-- 移除导出按钮 -->
 
         <el-button @click="$emit('close')" size="small">
           <el-icon>
@@ -337,27 +341,31 @@
           <el-tab-pane label="事件列表" name="events">
             <!-- 事件列表过滤器 -->
             <div class="filter-container">
-              <el-input v-model="eventsFilter.keyword" placeholder="搜索事件标题或地点" clearable @input="filterEvents"
-                style="width: 220px; margin-right: 10px;">
-                <template #prefix>
-                  <el-icon>
-                    <Search />
-                  </el-icon>
-                </template>
-              </el-input>
+              <div class="filter-left">
+                <el-input v-model="eventsFilter.keyword" placeholder="搜索事件标题或地点" clearable @input="filterEvents"
+                  style="width: 220px; margin-right: 10px;">
+                  <template #prefix>
+                    <el-icon>
+                      <Search />
+                    </el-icon>
+                  </template>
+                </el-input>
 
-              <el-select v-model="eventsFilter.nodeType" placeholder="事件类型" clearable @change="filterEvents"
-                style="width: 140px; margin-right: 10px;">
-                <el-option label="源事件" value="source" />
-                <el-option label="终端事件" value="terminal" />
-                <el-option label="枢纽事件" value="hub" />
-                <el-option label="热点事件" value="hot" />
-                <el-option label="普通事件" value="normal" />
-              </el-select>
+                <el-select v-model="eventsFilter.nodeType" placeholder="事件类型" clearable @change="filterEvents"
+                  style="width: 140px; margin-right: 10px;">
+                  <el-option label="源事件" value="source" />
+                  <el-option label="终端事件" value="terminal" />
+                  <el-option label="枢纽事件" value="hub" />
+                  <el-option label="热点事件" value="hot" />
+                  <el-option label="普通事件" value="normal" />
+                </el-select>
 
-              <el-button @click="resetEventsFilter">
-                重置过滤器
-              </el-button>
+                <el-button @click="resetEventsFilter">
+                  重置过滤器
+                </el-button>
+              </div>
+              
+              <!-- 移除添加事件按钮 -->
             </div>
 
             <el-table :data="filteredEvents" style="width: 100%"
@@ -406,8 +414,8 @@
             </div>
           </el-tab-pane>
 
-          <el-tab-pane label="关系列表" name="relations">
-            <!-- 关系列表过滤器 -->
+          <!-- 隐藏关系列表tab -->
+          <!-- <el-tab-pane label="关系列表" name="relations">
             <div class="filter-container">
               <el-input v-model="relationsFilter.keyword" placeholder="搜索关系描述" clearable @input="filterRelations"
                 style="width: 220px; margin-right: 10px;">
@@ -456,14 +464,13 @@
               <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip sortable="custom" />
             </el-table>
 
-            <!-- 分页 -->
             <div class="pagination-container" v-if="filteredRelationsAll.length > relationsPagination.size">
               <el-pagination v-model:current-page="relationsPagination.page"
                 v-model:page-size="relationsPagination.size" :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next" :total="filteredRelationsAll.length"
                 @size-change="handleRelationsSizeChange" @current-change="handleRelationsCurrentChange" />
             </div>
-          </el-tab-pane>
+          </el-tab-pane> -->
         </el-tabs>
       </div>
     </div>
@@ -476,10 +483,12 @@ import { ElMessage, ElLoading } from 'element-plus'
 import {
   Calendar, Document, Connection, Clock, Share, List, Close, Location,
   ZoomIn, ZoomOut, Refresh, Download, MoreFilled, Search, Position, User, Flag,
-  Star, TopRight, BottomRight, InfoFilled
+  Star, TopRight, BottomRight, InfoFilled, Plus, Edit, ArrowDown
 } from '@element-plus/icons-vue'
 import { timelineApi } from '@/api/timeline'
 import { ElMessageBox } from 'element-plus'
+// import AddEventForm from './AddEventForm.vue'
+// import SelectEventList from './SelectEventList.vue'
 
 // 类型定义
 interface TimelineEvent {
@@ -559,6 +568,8 @@ const selectedEventId = ref<string | null>(null)
 const timelineZoom = ref(1)
 const showExportDialog = ref(false)
 const exportLoading = ref(false)
+const showAddEventDialog = ref(false)
+const showSelectEventDialog = ref(false)
 const exportOptions = reactive({
   format: 'json',
   includeDetails: true,
@@ -812,6 +823,35 @@ const timeMarkers = computed(() => {
 })
 
 // 方法
+
+// 处理添加事件命令
+const handleAddEventCommand = (command: string) => {
+  if (command === 'manual') {
+    showAddEventDialog.value = true
+  } else if (command === 'select') {
+    showSelectEventDialog.value = true
+  }
+}
+
+// 处理添加事件成功
+const handleAddEventSuccess = () => {
+  showAddEventDialog.value = false
+  ElMessage.success('事件添加成功')
+  // 重新加载时间线数据
+  if (currentTimeline.value?.id) {
+    loadTimelineDetail(currentTimeline.value.id)
+  }
+}
+
+// 处理选择事件成功
+const handleSelectEventSuccess = () => {
+  showSelectEventDialog.value = false
+  ElMessage.success('事件添加成功')
+  // 重新加载时间线数据
+  if (currentTimeline.value?.id) {
+    loadTimelineDetail(currentTimeline.value.id)
+  }
+}
 
 // 从时间线中移除事件
 const removeEventFromTimeline = async (event: any) => {

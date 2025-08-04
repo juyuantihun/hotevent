@@ -17,6 +17,7 @@ const Layout = lazyLoad(() => import('@/layout/index.vue'), 100)
 const Login = lazyLoad(() => import('@/views/login/index.vue'), 100)
 const Dashboard = lazyLoad(() => import('@/views/dashboard/index.vue'), 150)
 const TimelineList = lazyLoad(() => import('@/views/timeline/index-simple.vue'), 150)
+const TimelineEventManagement = lazyLoad(() => import('@/views/timeline/event-management.vue'), 150)
 const EventList = lazyLoad(() => import('@/views/event/EventList.vue'), 150)
 
 // 次要路由组件使用标准懒加载
@@ -159,6 +160,16 @@ const routes: RouteRecordRaw[] = [
               title: '时间线列表',
               icon: 'List',
               description: '查看和管理所有时间线'
+            }
+          },
+          {
+            path: '/timeline/event-management',
+            name: 'TimelineEventManagement',
+            component: TimelineEventManagement,
+            meta: {
+              title: '事件管理',
+              icon: 'EditPen',
+              description: '为时间线添加和管理事件'
             }
           },
           {

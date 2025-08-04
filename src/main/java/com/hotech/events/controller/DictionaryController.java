@@ -231,4 +231,96 @@ public class DictionaryController {
             return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
         }
     }
+
+    // ========== 前端专用接口 ==========
+
+    /**
+     * 获取事件类型列表
+     */
+    @GetMapping("/event-types")
+    @Operation(summary = "获取事件类型列表", description = "获取事件类型字典项")
+    public ResponseEntity<ApiResponse<List<DictionaryDTO>>> getEventTypes() {
+        try {
+            log.info("获取事件类型列表请求");
+            
+            List<DictionaryDTO> result = dictionaryService.getDictionaryByType("event_type");
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取事件类型列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取事件主体列表
+     */
+    @GetMapping("/subjects")
+    @Operation(summary = "获取事件主体列表", description = "获取事件主体字典项")
+    public ResponseEntity<ApiResponse<List<DictionaryDTO>>> getSubjects() {
+        try {
+            log.info("获取事件主体列表请求");
+            
+            List<DictionaryDTO> result = dictionaryService.getDictionaryByType("subject");
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取事件主体列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取事件客体列表
+     */
+    @GetMapping("/objects")
+    @Operation(summary = "获取事件客体列表", description = "获取事件客体字典项")
+    public ResponseEntity<ApiResponse<List<DictionaryDTO>>> getObjects() {
+        try {
+            log.info("获取事件客体列表请求");
+            
+            List<DictionaryDTO> result = dictionaryService.getDictionaryByType("object");
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取事件客体列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取关系类型列表
+     */
+    @GetMapping("/relation-types")
+    @Operation(summary = "获取关系类型列表", description = "获取关系类型字典项")
+    public ResponseEntity<ApiResponse<List<DictionaryDTO>>> getRelationTypes() {
+        try {
+            log.info("获取关系类型列表请求");
+            
+            List<DictionaryDTO> result = dictionaryService.getDictionaryByType("relation_type");
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取关系类型列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取国家/地区列表
+     */
+    @GetMapping("/countries")
+    @Operation(summary = "获取国家/地区列表", description = "获取国家/地区字典项（树形结构）")
+    public ResponseEntity<ApiResponse<List<DictionaryDTO>>> getCountries() {
+        try {
+            log.info("获取国家/地区列表请求");
+            
+            List<DictionaryDTO> result = dictionaryService.getDictionaryTree("country");
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取国家/地区列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
 } 
