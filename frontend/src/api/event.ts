@@ -4,11 +4,100 @@
 import request from './index'
 
 /**
+ * 事件数据类型
+ */
+export interface Event {
+  id?: string
+  eventCode?: string
+  eventTime?: string
+  eventType?: string
+  subject?: string
+  object?: string
+  eventLocation?: string
+  eventDescription?: string
+  relationType?: string
+  relationName?: string
+  intensityLevel?: number
+  keywords?: string[] | string
+  latitude?: number
+  longitude?: number
+  sourceType?: number
+  status?: number
+  createdAt?: string
+  updatedAt?: string
+}
+
+/**
+ * 事件查询参数类型
+ */
+export interface EventQuery {
+  current?: number
+  size?: number
+  eventType?: string
+  subject?: string
+  object?: string
+  startTime?: string
+  endTime?: string
+  sourceType?: string
+  sortField?: string
+  sortOrder?: string
+  keyword?: string
+}
+
+/**
+ * 分页结果类型
+ */
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  current: number
+  size: number
+}
+
+/**
+ * 统计数据类型
+ */
+export interface StatsData {
+  totalEvents: number
+  todayEvents: number
+  manualEvents: number
+  deepseekEvents: number
+}
+
+/**
+ * 地理分布统计数据类型
+ */
+export interface GeographicStatsData {
+  countryStats: Array<{
+    name: string
+    value: number
+  }>
+  mapData: Array<{
+    name: string
+    value: [number, number, number]
+  }>
+  totalCountries: number
+  totalEvents: number
+}
+
+/**
+ * 事件类型分布统计数据类型
+ */
+export interface EventTypeStatsData {
+  typeDistribution: Array<{
+    name: string
+    value: number
+  }>
+  totalCount: number
+  typeCount: number
+}
+
+/**
  * 获取事件列表
  * @param params 查询参数
  * @returns 事件列表
  */
-export const getEventList = (params: any) => {
+export const getEventList = (params: EventQuery): Promise<PageResult<Event>> => {
   // 使用新路径
   return request({
     url: '/event/list',
@@ -145,9 +234,31 @@ export const exportAllEvents = (format: string = 'json') => {
  * 获取统计数据
  * @returns 统计数据
  */
-export const getStats = () => {
+export const getStats = (): Promise<StatsData> => {
   return request({
     url: '/event/stats',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取地理分布统计数据
+ * @returns 地理分布统计数据
+ */
+export const getGeographicStats = (): Promise<GeographicStatsData> => {
+  return request({
+    url: '/event/geographic-stats',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取事件类型分布统计数据
+ * @returns 事件类型分布统计数据
+ */
+export const getEventTypeStats = (): Promise<EventTypeStatsData> => {
+  return request({
+    url: '/event/type-stats',
     method: 'get'
   })
 }
@@ -165,5 +276,7 @@ export const eventApi = {
   addEventRelation,
   deleteEventRelation,
   exportAllEvents,
-  getStats
+  getStats,
+  getGeographicStats,
+  getEventTypeStats
 }

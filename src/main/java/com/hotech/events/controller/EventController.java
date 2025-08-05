@@ -247,6 +247,24 @@ public class EventController {
     }
 
     /**
+     * 获取地理分布统计数据
+     */
+    @GetMapping("/geographic-stats")
+    @Operation(summary = "获取地理分布统计", description = "获取按国家/地区统计的事件分布数据")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getGeographicStats() {
+        try {
+            log.info("获取地理分布统计数据请求");
+            
+            Map<String, Object> result = eventService.getGeographicStats();
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取地理分布统计数据失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
      * 获取未关联到指定时间线的事件列表
      */
     @GetMapping("/unlinked/{timelineId}")
@@ -262,6 +280,24 @@ public class EventController {
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             log.error("获取未关联事件列表失败", e);
+            return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
+        }
+    }
+
+    /**
+     * 获取事件类型分布统计数据
+     */
+    @GetMapping("/type-stats")
+    @Operation(summary = "获取事件类型分布统计", description = "获取按事件类型统计的分布数据")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getEventTypeStats() {
+        try {
+            log.info("获取事件类型分布统计数据请求");
+            
+            Map<String, Object> result = eventService.getEventTypeStats();
+            
+            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        } catch (Exception e) {
+            log.error("获取事件类型分布统计数据失败", e);
             return ResponseEntity.ok(ApiResponse.error("查询失败：" + e.getMessage()));
         }
     }

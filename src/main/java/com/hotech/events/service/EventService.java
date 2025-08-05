@@ -104,6 +104,13 @@ public interface EventService {
     Map<String, Object> getStats();
 
     /**
+     * 获取地理分布统计数据
+     * 
+     * @return 地理分布统计数据
+     */
+    Map<String, Object> getGeographicStats();
+
+    /**
      * 获取未关联到指定时间线的事件列表
      * 
      * @param timelineId 时间线ID
@@ -111,4 +118,11 @@ public interface EventService {
      * @return 未关联的事件列表
      */
     Page<EventDTO> getUnlinkedEvents(Long timelineId, EventQueryDTO queryDTO);
+
+    /**
+     * 获取事件类型分布统计数据
+     * 
+     * @return 事件类型分布统计数据
+     */
+    Map<String, Object> getEventTypeStats();
 } 
